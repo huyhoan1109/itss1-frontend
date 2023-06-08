@@ -1,0 +1,41 @@
+.jp-font {
+    font-size: 24px;
+    background-image: linear-gradient(to right, blue, purple, pink);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip:calc()
+  }
+.colorButton {
+    background: blue;
+    border: none;
+    color: white;
+    padding: 15px 120px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 15px; /* Tạo viền cong */
+  }
+  
+.colorButton:hover {
+    background: green;
+  }
+  
+.colorButton:focus {
+    outline: none;
+  }
+  
+.colorButton span {
+    font-size: 70px; /* Tăng cỡ chữ */
+  }
+.jp-font-title {
+    line-height: 1;
+    margin-bottom: 50px;
+  }
+  
+.jp-font-subtitle {
+    margin-top: 5px;
+    margin-bottom: 20px; /* Đặt khoảng cách dưới (ví dụ: 20px) */
+  }
+  
+  
+ 

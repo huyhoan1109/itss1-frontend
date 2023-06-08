@@ -1,0 +1,18 @@
+.slider-components {
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 0;
+}
+
+.component-content {
+    /* margin-top: 90px; Đặt khoảng cách mong muốn */
+    position: relative;
+    margin-top: 10%;
+}
+  
+.component-image {
+    margin-top: 10%;
+    width: 400;
+    height: 400;
+}

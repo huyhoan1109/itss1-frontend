@@ -1,0 +1,67 @@
+header {
+    background: #FDF6F9;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 8%);
+    position: relative;
+    z-index: 44;
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+  }
+  
+header .logo {
+    display: flex;
+    justify-content: space-between; /* Căn giữa theo chiều ngang và tạo khoảng cách giữa các phần tử */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+  
+.header-content {
+    display: flex; 
+    position: absolute;
+    right: 100px;/* Khoảng cách giữa header và "test1" */
+    font-size: 18px;
+}
+  
+.header-content div:not(:last-child) {
+    margin-right: 20px; /* Khoảng cách giữa "test1" và "test2" */
+}
+  
+.language-menu {
+    position: relative;
+}
+  
+  .language-select {
+    position: relative;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 5px 6px;
+    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
+    /* margin-right: 16px; Khoảng cách giữa menu và "test2" */
+  }
+  
+  .language-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #000;
+  }
+  
+  .language-select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-40%);
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: #000 transparent transparent transparent;
+  }
+  .header-content div {
+    text-decoration: underline;
+  } 
+  .logo-text {
+    margin-left: 35px; /* le trai sagasuy */
+    color: black;
+  }
+  

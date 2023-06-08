@@ -1,0 +1,11 @@
+.image-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 200px;
+  }
+  
+.image-content img {
+    width: 300px;
+  }
+  
