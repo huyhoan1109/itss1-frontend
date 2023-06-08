@@ -5,8 +5,8 @@ header {
     position: relative;
     z-index: 44;
     display: flex;
-    align-items: center; /* Căn giữa theo chiều dọc */
-  }
+    align-items: center; 
+}
   
 header .logo {
     display: flex;
@@ -18,18 +18,22 @@ header .logo {
     display: flex; 
     position: absolute;
     right: 100px;/* Khoảng cách giữa header và "test1" */
-    font-size: 18px;
+    font-size: 17px;
 }
   
 .header-content div:not(:last-child) {
-    margin-right: 20px; /* Khoảng cách giữa "test1" và "test2" */
+    margin-right: 25px; /* Khoảng cách giữa "test1" và "test2" */
 }
-  
+
+.header-content .content-text {
+    margin-top: 5px
+}
+
 .language-menu {
     position: relative;
 }
   
-  .language-select {
+.language-select {
     position: relative;
     appearance: none;
     background-color: transparent;
@@ -37,10 +41,10 @@ header .logo {
     border-radius: 10px;
     padding: 5px 6px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 17px;
     text-align: center;
     /* margin-right: 16px; Khoảng cách giữa menu và "test2" */
-  }
+}
   
   .language-select:focus {
     outline: none;
@@ -63,5 +67,6 @@ header .logo {
   .logo-text {
     margin-left: 35px; /* le trai sagasuy */
     color: black;
+    font-size: 30px;
   }
   

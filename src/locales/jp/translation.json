@@ -14,18 +14,15 @@
         "level": "レベル",
         "experience": "経験",
         "gender": "性別",
-        "mail": "メール",
+        "email": "メール",
         "phone": "電話番号",
         "male": "男性",
         "female": "女性",
         "null": "なし",
         "year": "年",
         "sort_by": "選別",
-        "sort_by_name": "名前で",
-        "sort_by_price": "料金で",
-        "sort_by_level": "レベルで",
-        "sort_by_exp": "経験で",
-        "sort_by_star": "星で",
+        "star_average": "星の平均",
+        "_search_name": "名前で調べる",
         "filter": "フィルター",
         "info_link": "連絡リンク",
         "month": "月",
@@ -43,6 +40,7 @@
         "slider_note2":"成績の良い候補者のリスト。 評価結果とコメント",
         "slider_note3": "家庭教師を探し始める",
         "reject_student": "家庭教師は申し出を断りました。",
-        "allow_student": "家庭教師は提案に同意しました。"
+        "allow_student": "家庭教師は提案に同意しました。",
+        "footer_intro": "私たちはチーちゃん会社であり、お客様に最高のサービスとテクノロジーを提供することに専念しています。"
     }
 }

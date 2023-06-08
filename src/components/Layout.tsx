@@ -19,7 +19,11 @@ const Layout:FC<LayoutProps> = ({children}) => {
     return (
         <Wrapper>
             <Header />
-                <main className='main'>{children}</main>
+                <main className='main'>
+                    {/* <div className="border"> */}
+                        {children}
+                    {/* </div> */}
+                </main>
             <Footer />
         </Wrapper>
     )

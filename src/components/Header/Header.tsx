@@ -25,38 +25,38 @@ function LanguageSwitcher(){
 export const Header = () => {
     const { t } = useTranslation()
     return (
-        <header className="header">
-            <div className="scontainer flex">
-                <div className="logo">
-                    <h1>
+            <header className="header">
+                <div className="scontainer flex">
+                    <div className="logo">
+                        <h1>
+                            <Link 
+                                className="logo-text" 
+                                style={{ textDecoration: 'none' }} 
+                                to={routePath.home}
+                            >
+                                SaGaSuy
+                            </Link>
+                        </h1>
                         <Link 
-                            className="logo-text" 
-                            style={{ textDecoration: 'none' }} 
                             to={routePath.home}
                         >
-                            SaGaSuy
+                            <img src={Logo} alt="logo" width="50px" />
                         </Link>
-                    </h1>
-                    <Link 
-                        to={routePath.home}
-                    >
-                        <img src={Logo} alt="logo" width="50px" />
-                    </Link>
-                    <div className="header-content">
-                        <div>
-                            <NavLink to={routePath.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
-                                {t('content.signup')}
-                            </NavLink>
-                        </div>
-                        <div>
-                            <NavLink to={routePath.login} className={({ isActive }) => (isActive ? 'active' : '')}>
-                                {t('content.login')}
-                            </NavLink>
-                        </div>
+                        <div className="header-content">
+                            <div className="content-text">
+                                <NavLink to={routePath.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                    <button className="astext">{t('content.signup')} </button>
+                                </NavLink>
+                            </div>
+                            <div className="content-text">
+                                <NavLink to={routePath.login} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                    <button className="astext">{t('content.login')} </button>
+                                </NavLink>
+                            </div>
                             <LanguageSwitcher />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </header>      
+            </header>
     );
 };

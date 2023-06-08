@@ -15,8 +15,7 @@ const resources = {
     }
 };
 
-i18n
-    .use(Backend)
+i18n.use(Backend)
     .use(initReactI18next)
     .init({
         resources,

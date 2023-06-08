@@ -41,7 +41,6 @@ const BrowserRouter = () => {
           </Layout>
         ),
       },
-
     {
       path: routePath.notFound,
       element: <NotFoundPage />,

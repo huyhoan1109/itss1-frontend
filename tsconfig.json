@@ -20,7 +20,8 @@
       "src",
       "src/assets",
       "src/component",
-      "./src/index.d.ts"
-, "src/services/.ts"  ],
+      "./src/index.d.ts",
+      "src/services/.ts"  
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

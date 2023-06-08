@@ -4,6 +4,8 @@ import {IconContext} from "react-icons"
 import { useTranslation } from 'react-i18next';
 import { routePath } from "../../../routes/routePath";
 import { Link } from "react-router-dom";
+import image from "../../../assets/images/pic4.png";
+
 
 function SearchIcon() {
     return (
@@ -20,14 +22,18 @@ const Slider2 = () => {
             <div className="jp-font">
                 <h1 className="jp-font-title">{t('content.slider_note1')}</h1>
             </div>
-            <div>
-                <h2 className="jp-font-subtitle">{t('content.slider_note2')}</h2>
-            </div>
-            <Link to={routePath.searchTeacher}>
-                <button className="colorButton">{t('content.slider_note3')}
-                    <SearchIcon />
-            </button>
+            <h2 className="jp-font-subtitle">{t('content.slider_note2')}</h2>
+            <Link to={routePath.searchTeacher} >
+                <button className="colorButton" style={{ display: "flex"}}>
+                    <div className="button-content">
+                        {t('content.slider_note3')}
+                    </div>
+                    <div className="button-content">
+                        <SearchIcon />
+                    </div>
+                </button>
             </Link>
+            <img style={{margin: "auto", marginTop: 20}} src={image} alt="anh4" sizes="80%"/>
         </div>
     );
 };
