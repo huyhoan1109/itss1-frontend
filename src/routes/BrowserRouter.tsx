@@ -5,7 +5,8 @@ import LoginPage from '../pages/auth/Login'
 import SignUpPage from '../pages/auth/SignUp'
 import HomePage from '../pages/Home'
 import { routePath } from './routePath'
-import SearchPage from '../pages/Search'
+import SearchPage from '../pages/SearchTeachers'
+import InfoTeacherPage from '../pages/InfoTeacher'
 
 const BrowserRouter = () => {
   const router = createBrowserRouter([
@@ -34,13 +35,21 @@ const BrowserRouter = () => {
       ),
     },
     {
-        path: routePath.searchTeacher,
+        path: routePath.baseTeacher,
         element: (
           <Layout>
             <SearchPage />
           </Layout>
         ),
-      },
+    },
+    {
+      path: routePath.baseTeacher + '/:id',
+      element: (
+        <Layout>
+          <InfoTeacherPage />
+        </Layout>
+      ),
+    },
     {
       path: routePath.notFound,
       element: <NotFoundPage />,
