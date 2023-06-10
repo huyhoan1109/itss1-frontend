@@ -1,7 +1,11 @@
+import Layout from "../../components/Layout"
+
 const SignUpPage = () => {
     return (
-        <div></div>
-    );
-};
+        <Layout>
+            
+        </Layout>
+    )
+} 
 
 export default SignUpPage

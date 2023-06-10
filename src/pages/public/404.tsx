@@ -2,15 +2,6 @@ import { Link } from 'react-router-dom'
 import { styled } from 'styled-components'
 
 const NotFoundPage = () => (
-    // <div className="not-found">
-    //     <img
-    //         src="https://www.pngitem.com/pimgs/m/561-5616833_image-not-found-png-not-found-404-png.png"
-    //         alt="not-found"
-    //     />
-    //     <Link to="/" className="link-home">
-    //         Go Home
-    //     </Link>
-    // </div>
     <Wrapper>
         <div className="bg-gray-100 h-screen justify-center">
             <center className="mt-24 m-auto">

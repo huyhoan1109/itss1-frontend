@@ -23,7 +23,7 @@ const Slider2 = () => {
                 <h1 className="jp-font-title">{t('content.slider_note1')}</h1>
             </div>
             <h2 className="jp-font-subtitle">{t('content.slider_note2')}</h2>
-            <Link to={routePath.searchTeacher} >
+            <Link to={routePath.public.baseTeacher} >
                 <button className="colorButton" style={{ display: "flex"}}>
                     <div className="button-content">
                         {t('content.slider_note3')}

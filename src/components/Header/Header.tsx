@@ -1,9 +1,9 @@
 import "./Header.css";
-import styled from "styled-components"
 import { Link, NavLink } from "react-router-dom"
 import Logo from "../../assets/images/logo.png";
 import { routePath } from '../../routes/routePath'
 import { useTranslation } from "react-i18next";
+import useAuth from "../../hooks/useAuth";
 
 function LanguageSwitcher(){
     const { t, i18n } = useTranslation();
@@ -24,39 +24,52 @@ function LanguageSwitcher(){
 
 export const Header = () => {
     const { t } = useTranslation()
+    const {auth} = useAuth()
     return (
-            <header className="header">
-                <div className="scontainer flex">
-                    <div className="logo">
-                        <h1>
-                            <Link 
-                                className="logo-text" 
-                                style={{ textDecoration: 'none' }} 
-                                to={routePath.home}
-                            >
-                                SaGaSuy
-                            </Link>
-                        </h1>
+        <header className="header">
+            <div className="scontainer flex">
+                <div className="logo">
+                    <h1>
                         <Link 
-                            to={routePath.home}
+                            className="logo-text" 
+                            style={{ textDecoration: 'none' }} 
+                            to={routePath.public.home}
                         >
-                            <img src={Logo} alt="logo" width="50px" />
+                            SaGaSuy
                         </Link>
+                    </h1>
+                    <Link 
+                        to={routePath.public.home}
+                    >
+                        <img src={Logo} alt="logo" width="50px" />
+                    </Link>
+                    {
+                        !auth?.user &&
                         <div className="header-content">
                             <div className="content-text">
-                                <NavLink to={routePath.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <NavLink to={routePath.public.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
                                     <button className="astext">{t('content.signup')} </button>
                                 </NavLink>
                             </div>
                             <div className="content-text">
-                                <NavLink to={routePath.login} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <NavLink to={routePath.public.login} className={({ isActive }) => (isActive ? 'active' : '')}>
                                     <button className="astext">{t('content.login')} </button>
                                 </NavLink>
                             </div>
                             <LanguageSwitcher />
                         </div>
-                    </div>
+                    }
+                    {
+                        auth?.user &&
+                        <div className="header-content">
+                            <div className="content-text">
+                                {auth?.user?.name}
+                            </div>
+                            <LanguageSwitcher />
+                        </div>
+                    }
                 </div>
-            </header>
+            </div>
+        </header>
     );
 };

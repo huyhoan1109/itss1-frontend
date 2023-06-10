@@ -10,15 +10,15 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
 import { useEffect, useState } from 'react'
-import Star from '../components/view/Star'
+import Star from '../../components/view/Star'
 import { useTranslation } from 'react-i18next'
-import { routePath } from '../routes/routePath'
- 
-import { Api } from '../services/api'
+import { routePath } from '../../routes/routePath'
+import { Snackbar } from '@mui/material';
+import { Api } from '../../services/api'
 import { NavLink } from 'react-router-dom'
+import Layout from '../../components/Layout'
 
-
-const SearchPage = () => {
+const SearchTeachersPage = () => {
     const {t} = useTranslation()
     const [name, setName] = useState<string>('')
     const [currentPage, setCurrentPage] = useState<number>(1)
@@ -58,7 +58,7 @@ const SearchPage = () => {
 
     const saveClipBoard = (value: string) => {
         navigator.clipboard.writeText(value)
-        
+        alert("Copy: "+value)
     }
 
     const handleFinishForm = async () => {
@@ -70,7 +70,7 @@ const SearchPage = () => {
         queryFn: () =>
             Api.request({
                 method: 'GET',
-                url: routePath.baseTeacher,
+                url: routePath.public.baseTeacher,
                 params: {
                     name,
                     page: currentPage,
@@ -93,6 +93,7 @@ const SearchPage = () => {
     }, [data])
   
     return (
+        <Layout>
         <div className='bg-blue-200 p-10'>
             <div className='mx-auto max-w-7xl grid grid-cols-[2fr_1fr] gap-4'>
                 <div className='shadow-2xl p-6 bg-white'>
@@ -134,7 +135,7 @@ const SearchPage = () => {
                                 key={index}
                                 className='border border-solid gap-5 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
                             >
-                                <NavLink key={index} to={routePath.baseTeacher + `/${value.id}`}>
+                                <NavLink key={index} to={routePath.public.baseTeacher + `/${value.id}`}>
                                     <div className='flex justify-center items-start'>
                                         <img
                                             src={value.avatar}
@@ -147,7 +148,7 @@ const SearchPage = () => {
                                     <div className='flex justify-between items-center'>
                                         <div className='flex items-center justify-start text-xl gap-6'>
                                             <div className='font-semibold text-yellow-700'>{t('content.tutor')}</div>
-                                            <NavLink key={index} to={routePath.baseTeacher + `/${value.id}`}>
+                                            <NavLink key={index} to={routePath.public.baseTeacher + `/${value.id}`}>
                                                 <div className='font-semibold text-black'>{value.name}</div>
                                             </NavLink>
                                         </div>
@@ -306,7 +307,8 @@ const SearchPage = () => {
             </div>
         </div>
     </div>
+    </Layout>
 )}
   
-export default SearchPage
+export default SearchTeachersPage
   

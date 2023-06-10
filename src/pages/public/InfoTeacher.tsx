@@ -1,9 +1,10 @@
 import {Link} from 'react-router-dom'
-import { routePath } from '../routes/routePath';
+import { routePath } from '../../routes/routePath';
 import { useQuery } from '@tanstack/react-query';
-import { Api } from '../services/api';  
+import { Api } from '../../services/api';  
 import { useParams, redirect } from 'react-router-dom';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import Layout from '../../components/Layout';
 
 const InfoTeacherPage = () => {
     const params = useParams()
@@ -13,14 +14,18 @@ const InfoTeacherPage = () => {
         queryFn: () => 
             Api.request({
                 method: 'GET',
-                url: routePath.baseTeacher + `/${params.id}`
+                url: routePath.public.baseTeacher + `/${params.id}`
             })
     })
 
+    useEffect(() => {
+        if (data?.data?.data) setInfo(data.data.data)
+    }, [data])
+
     return (
-        <div>
-            
-        </div>
+        <Layout>
+
+        </Layout>
     );
 };
 
