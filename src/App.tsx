@@ -3,10 +3,10 @@ import i18n from './translation/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import PublicRouter from './routes/PublicRouter'
-import PrivateRouter from './routes/TeacherRouter';
+import PrivateRouter from './routes/private/TeacherRouter';
 import AuthProvider from './contexts/AuthProvider';
-import AdminRouter from './routes/AdminRouter';
-import TeacherRouter from './routes/TeacherRouter';
+import AdminRouter from './routes/private/AdminRouter';
+import TeacherRouter from './routes/private/TeacherRouter';
 
 
 const queryClient = new QueryClient()

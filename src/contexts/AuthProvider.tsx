@@ -1,11 +1,11 @@
-import { ReactNode, FC, useState, createContext } from "react";
+import { ReactNode, FC, useState, createContext, useEffect } from "react";
 
 export const AuthContext = createContext<any>(null)
 
 const initAuthProvider = () => {
+    let init_persist = localStorage.getItem("persist")||""
+    const [persist, setPersist] = useState(JSON.parse(init_persist) || false);
     const [auth, setAuth] = useState({})
-    let init_persist = JSON.parse(localStorage.getItem("persist")||"")
-    const [persist, setPersist] = useState(init_persist || false);
     return {
         auth,
         setAuth,

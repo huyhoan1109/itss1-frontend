@@ -7,26 +7,42 @@ import {
     SortAscendingOutlined,
 } from '@ant-design/icons'
 
+import user_image from '../../assets/images/user.png'
+import { BiUserCircle } from 'react-icons/bi'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, FC } from 'react'
 import Star from '../../components/view/Star'
 import { useTranslation } from 'react-i18next'
 import { routePath } from '../../routes/routePath'
-import { Snackbar } from '@mui/material';
 import { Api } from '../../services/api'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Layout from '../../components/Layout'
+
+const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
+    return (
+        <div className='flex justify-center items-start'>
+            <img 
+                src={avatar}
+                className='w-36 h-36 object-cover rounded-full border border-solid border-gray-500'
+                alt=''
+                onError={({ currentTarget }) => {
+                    currentTarget.onerror = null; // prevents looping
+                    currentTarget.src = user_image
+                }}
+            />
+        </div>
+    )
+}
 
 const SearchTeachersPage = () => {
     const {t} = useTranslation()
     const [name, setName] = useState<string>('')
-    const [currentPage, setCurrentPage] = useState<number>(1)
     const [value, setValue] = useState<any>({})
     const [sortType, setSortType] = useState<any>(1)
     const [teachers, setTeachers] = useState<any>([])
     const [infoPage, setInfoPage] = useState<any>({})
-    
+    const [currentPage, setCurrentPage] = useState<number>(1)
     const [form] = Form.useForm()
 
     const items: MenuProps['items'] = [
@@ -70,7 +86,7 @@ const SearchTeachersPage = () => {
         queryFn: () =>
             Api.request({
                 method: 'GET',
-                url: routePath.public.baseTeacher,
+                url: routePath.allTeachers,
                 params: {
                     name,
                     page: currentPage,
@@ -135,22 +151,16 @@ const SearchTeachersPage = () => {
                                 key={index}
                                 className='border border-solid gap-5 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
                             >
-                                <NavLink key={index} to={routePath.public.baseTeacher + `/${value.id}`}>
-                                    <div className='flex justify-center items-start'>
-                                        <img
-                                            src={value.avatar}
-                                            className='w-36 h-36 object-cover rounded-full border border-solid border-gray-500'
-                                            alt=''
-                                        />
-                                    </div>
-                                </NavLink>
+                                <Link key={index} to={routePath.teacher.base + `/${value.id}`}>
+                                    <RenderAvatar avatar={value.avatar} />
+                                </Link>
                                 <div>
                                     <div className='flex justify-between items-center'>
                                         <div className='flex items-center justify-start text-xl gap-6'>
                                             <div className='font-semibold text-yellow-700'>{t('content.tutor')}</div>
-                                            <NavLink key={index} to={routePath.public.baseTeacher + `/${value.id}`}>
+                                            <Link key={index} to={routePath.teacher.base + `/${value.id}`}>
                                                 <div className='font-semibold text-black'>{value.name}</div>
-                                            </NavLink>
+                                            </Link>
                                         </div>
                                         <div className='cursor-pointer flex gap-1'>
                                             <div>{value.star_average}</div>
@@ -178,7 +188,7 @@ const SearchTeachersPage = () => {
                             </div>
                         </div>
                     ))}
-                    {!error && infoPage?.totalPages && (
+                    {!error && +infoPage?.totalPages > 0 && (
                         <Pagination
                             current={currentPage}
                             pageSize={3}
@@ -187,6 +197,9 @@ const SearchTeachersPage = () => {
                             className='mx-auto'
                         />
                     )}
+                    {+infoPage?.totalPages == 0 &&
+                        <div></div>
+                    }
                 </div>
             </div>
             <div>

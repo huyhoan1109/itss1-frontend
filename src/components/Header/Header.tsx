@@ -33,13 +33,13 @@ export const Header = () => {
                         <Link 
                             className="logo-text" 
                             style={{ textDecoration: 'none' }} 
-                            to={routePath.public.home}
+                            to={routePath.home}
                         >
                             SaGaSuy
                         </Link>
                     </h1>
                     <Link 
-                        to={routePath.public.home}
+                        to={routePath.home}
                     >
                         <img src={Logo} alt="logo" width="50px" />
                     </Link>
@@ -47,12 +47,12 @@ export const Header = () => {
                         !auth?.user &&
                         <div className="header-content">
                             <div className="content-text">
-                                <NavLink to={routePath.public.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <NavLink to={routePath.auth.signup} className={({ isActive }) => (isActive ? 'active' : '')}>
                                     <button className="astext">{t('content.signup')} </button>
                                 </NavLink>
                             </div>
                             <div className="content-text">
-                                <NavLink to={routePath.public.login} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <NavLink to={routePath.auth.login} className={({ isActive }) => (isActive ? 'active' : '')}>
                                     <button className="astext">{t('content.login')} </button>
                                 </NavLink>
                             </div>

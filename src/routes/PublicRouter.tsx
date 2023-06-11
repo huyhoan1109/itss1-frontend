@@ -1,9 +1,10 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter, Route } from 'react-router-dom'
 import { routePath } from './routePath'
 
 import NotFoundPage from '../pages/public/404'
 import LoginPage from '../pages/auth/Login'
 import SignUpPage from '../pages/auth/SignUp'
+import ForgotPasswordPage from '../pages/auth/ForgotPassword'
 import HomePage from '../pages/public/Home'
 import SearchTeachersPage from '../pages/public/SearchTeachers'
 import InfoTeacherPage from '../pages/public/InfoTeacher'
@@ -11,27 +12,31 @@ import InfoTeacherPage from '../pages/public/InfoTeacher'
 const PublicRouter = () => {
     const router = createBrowserRouter([
         {
-            path: routePath.public.home,
+            path: routePath.home,
             element: <HomePage />
         },
         {
-            path: routePath.public.login,
+            path: routePath.auth.login,
             element: <LoginPage />
         },
         {
-            path: routePath.public.signup,
+            path: routePath.auth.signup,
             element: <SignUpPage />
         },
         {
-            path: routePath.public.baseTeacher,
-            element: <SearchTeachersPage />,
+            path: routePath.auth.forgotPassword,
+            element: <ForgotPasswordPage />
         },
         {
-            path: routePath.public.baseTeacher + '/:id',
-            element: <InfoTeacherPage />
+            path: routePath.allTeachers,
+            element: <SearchTeachersPage />              
         },
         {
-            path: routePath.public.notFound,
+            path: routePath.teacher.base + "/:id",
+            element: <InfoTeacherPage />              
+        },
+        {
+            path: routePath.notFound,
             element: <NotFoundPage />,
         },
     ])
