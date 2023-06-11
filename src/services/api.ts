@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 
-export const Api: AxiosInstance = axios.create({
+const Api: AxiosInstance = axios.create({
     baseURL: "http://localhost:5000",
     timeout: 10000,
     headers: {},
@@ -18,3 +18,7 @@ Api.interceptors.response.use(
       return Promise.reject(error)
     }
 )
+
+export {
+  Api
+}
