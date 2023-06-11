@@ -8,9 +8,7 @@ import {
 } from '@ant-design/icons'
 
 import user_image from '../../assets/images/user.png'
-import { BiUserCircle } from 'react-icons/bi'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
 import { useEffect, useState, FC } from 'react'
 import Star from '../../components/view/Star'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +16,8 @@ import { routePath } from '../../routes/routePath'
 import { Api } from '../../services/api'
 import { Link } from 'react-router-dom'
 import Layout from '../../components/Layout'
+import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
+
 
 const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
     return (

@@ -1,5 +1,5 @@
 export const routePath = {
-    home: '/',
+    home: '/home',
     allTeachers: "/teachers",
     auth: {
         login: '/auth/login',
@@ -8,6 +8,7 @@ export const routePath = {
     },
     teacher: {
         base: '/teacher',
+        allStudents: '/teacher/students'
     },
     user: {
         base: '/user',
