@@ -1,3 +1,7 @@
+function path(root: string, sublink: string) {
+    return `${root}${sublink}`;
+}
+
 export const routePath = {
     home: '/home',
     allTeachers: "/teachers",
@@ -7,8 +11,8 @@ export const routePath = {
         forgotPassword: '/auth/forgot-password',
     },
     teacher: {
-        base: '/teacher',
-        allStudents: '/teacher/students'
+        view: (id: string) => path('/teacher/info',`/${id}`),
+        allStudents: '/teacher/your/students'
     },
     user: {
         base: '/user',

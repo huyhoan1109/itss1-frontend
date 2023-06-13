@@ -1,15 +1,15 @@
-import { ReactNode, FC, useState, createContext, useEffect } from "react";
+import { ReactNode, FC, useState, createContext, useCallback } from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 export const AuthContext = createContext<any>(null)
 
 const initAuthProvider = () => {
-    let init_persist = localStorage.getItem("persist")||""
-    const [persist, setPersist] = useState(JSON.parse(init_persist) || false);
-    const [auth, setAuth] = useState({})
+    const [persist, setPersist] = useState(JSON.parse(localStorage.getItem('persist')||"")||false)
+    const [auth, setAuth] = useLocalStorage('auth', "")
     return {
         auth,
         setAuth,
-        persist, 
+        persist,
         setPersist
     }
 }

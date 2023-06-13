@@ -5,7 +5,7 @@ import { routePath } from "../../routes/routePath"
 import {Button, Form, Input, Checkbox, notification} from "antd"
 
 import { Api } from "../../services/api"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { useTranslation } from "react-i18next"
 import Container from "../../components/Container"
@@ -17,27 +17,28 @@ const LoginPage = () => {
     const [email, setEmail] = useLocalStorage("email", "")
     const [password, setPassword] = useLocalStorage("password", "")
     const [passwordVisible, setPasswordVisible] = useState(false);
+
     const handleSubmit = async () => {
         Api.request({
             method: 'POST',
             url: routePath.auth.login,
             data:{
-                email,
-                password
+                email:email,
+                password:password
             }
         }).then((res) => {
             const user = res?.data?.data?.user;
             const token = res?.data?.data?.access_token;
-            setAuth({ user, token });
+            setAuth({ user, token })
             notification.success({
-                message: t('content.welcome') + ' ' + user.name
+                message: t('message.welcome') + ' ' + user.name
             })
-            return navigate(routePath.home)
+            if (user.role == 'admin') navigate(routePath.admin.dashboard, {replace: true})
+            else return navigate(routePath.home, {replace: true});
         }).catch((err) => {
             notification.error({
-                message: t('content.error') 
+                message: t('message.error') 
             })
-            setAuth({});
             console.log(err)
         })
     }
@@ -45,19 +46,19 @@ const LoginPage = () => {
     const togglePersist = () => {
         setPersist(!persist);
     }
-
     useEffect(() => {
-        localStorage.setItem("persist", persist);
-        if (!persist) {
-            setEmail("")
-            setPassword("")
+        localStorage.setItem("persist", JSON.stringify(persist));
+        return () => {
+            if (persist == false) {
+                setEmail("")
+                setPassword("")
+            }
         }
     }, [persist])
-
     return (
         <Layout>
             <Container>
-                {/* <Form>
+                <Form>
                     <Form.Item>
                         <Input 
                             defaultValue={email}
@@ -83,7 +84,7 @@ const LoginPage = () => {
                         </Checkbox>
                     </Form.Item>
                     <Button onClick={handleSubmit}>Submit</Button>
-                </Form> */}
+                </Form>
             </Container>
         </Layout>
     )

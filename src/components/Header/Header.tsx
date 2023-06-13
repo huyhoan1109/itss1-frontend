@@ -4,6 +4,7 @@ import Logo from "../../assets/images/logo.png";
 import { routePath } from '../../routes/routePath'
 import { useTranslation } from "react-i18next";
 import useAuth from "../../hooks/useAuth";
+import { notification } from "antd";
 
 function LanguageSwitcher(){
     const { t, i18n } = useTranslation();
@@ -24,7 +25,14 @@ function LanguageSwitcher(){
 
 export const Header = () => {
     const { t } = useTranslation()
-    const {auth} = useAuth()
+    const {auth, setAuth} = useAuth()
+    const handleLogout = () => {
+        setAuth({})
+        notification.success({
+            duration: 3,
+            message: t('message.goodbye')
+        })
+    }
     return (
         <header className="header">
             <div className="scontainer flex">
@@ -65,6 +73,12 @@ export const Header = () => {
                             <div className="content-text">
                                 {auth?.user?.name}
                             </div>
+                            <div className="content-text">
+                                <button className="astext" onClick={handleLogout}>{t('content.logout')} </button>
+                            </div>
+                            {/* <NavLink to={routePath.teacher.allStudents} className={({ isActive }) => (isActive ? 'active' : '')}>
+                                <button className="astext">student </button>
+                            </NavLink> */}
                             <LanguageSwitcher />
                         </div>
                     }

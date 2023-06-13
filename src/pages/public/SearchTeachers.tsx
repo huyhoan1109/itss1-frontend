@@ -18,6 +18,11 @@ import { Link } from 'react-router-dom'
 import Layout from '../../components/Layout'
 import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
 
+import TimeTableProp from '../../components/TimeTable/TimeTableProp'
+import TimeTables from '../../components/TimeTable/TimeTables'
+import MapProp from '../../components/Map/MapProp'
+import Map from '../../components/Map/Map'
+import * as L from "leaflet";
 
 const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
     return (
@@ -36,13 +41,64 @@ const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
 }
 
 const SearchTeachersPage = () => {
-    const {t} = useTranslation()
+    const {t, i18n} = useTranslation()
+    
+    const [chooseShift, setChooseShift] = useState<string>('')
+    const [table, setTable] = useState([false,false,false,false,false,false,false])
+    const [weekdays, setWeekDays] = useState<any>([])
+    const [showWeekend, setShowWeekend] = useState(false);
+    const [times, setTimes] = useState<any>({})
+    
+    let table_props: TimeTableProp = {
+        chooseShift, 
+        setChooseShift, 
+        table, 
+        setTable, 
+        weekdays, 
+        setWeekDays, 
+        times, 
+        setTimes, 
+        showWeekend, 
+        setShowWeekend
+    }
+
+    const [c_lat, setCLat] = useState(21.0695076) 
+    const [c_lng, setCLng] = useState(105.8378366)
+
+    const [teacher_lat, setTeacherLat] = useState(21.0695076)
+    const [teacher_lng, setTeacherLng] = useState(105.8378366)
+
+
+    let map_props: MapProp = {
+        c_lat: c_lat,
+        c_lng: c_lng,
+        lat: teacher_lat,
+        lng: teacher_lng
+    }
+
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setCLat(position.coords.latitude)
+                setCLng(position.coords.longitude);
+            });
+        }
+    }, [c_lat, c_lng, teacher_lat, teacher_lng])
+
+    const calDistance = (from_lat:number, from_lng:number, to_lat:number, to_lng:number) => {
+        let latlng1 = L.latLng(from_lat, from_lng);
+        let latlng2 = L.latLng(to_lat, to_lng);
+        return latlng1.distanceTo(latlng2) / 1000
+    }
+
     const [name, setName] = useState<string>('')
-    const [value, setValue] = useState<any>({})
+    const [filterValue, setFilterValue] = useState<any>({})
     const [sortType, setSortType] = useState<any>(1)
     const [teachers, setTeachers] = useState<any>([])
+
     const [infoPage, setInfoPage] = useState<any>({})
     const [currentPage, setCurrentPage] = useState<number>(1)
+    
     const [form] = Form.useForm()
 
     const items: MenuProps['items'] = [
@@ -78,11 +134,11 @@ const SearchTeachersPage = () => {
     }
 
     const handleFinishForm = async () => {
-        setValue(form.getFieldsValue())
+        setFilterValue(form.getFieldsValue())
     }
 
     const { isLoading, error, data } = useQuery({
-        queryKey: ['teacherList', name, currentPage, value],
+        queryKey: ['teacherList', name, currentPage, filterValue],
         queryFn: () =>
             Api.request({
                 method: 'GET',
@@ -90,23 +146,80 @@ const SearchTeachersPage = () => {
                 params: {
                     name,
                     page: currentPage,
-                    limit: 3,
-                    level: value.level,
-                    experience: value.experience,
-                    low_age: value.low_age,
-                    high_age: value.high_age,
-                    low_price: value.low_price,
-                    high_price: value.high_price,
-                    gender: value.gender,
-                    star: value.star_average
+                    limit: 4,
+                    level: filterValue.level,
+                    experience: filterValue.experience,
+                    low_age: filterValue.low_age,
+                    high_age: filterValue.high_age,
+                    low_price: filterValue.low_price,
+                    high_price: filterValue.high_price,
+                    gender: filterValue.gender,
+                    star: filterValue.star_average,
                 },
             }),
     })
 
     useEffect(() => {
-        if (data?.data?.data) setTeachers(data.data.data)
-        if (data?.data?.infoPage) setInfoPage(data.data.infoPage)
-    }, [data])
+        let count_teacher = 0
+        if (data?.data?.data) {
+            let validTeachers:any = []
+            data.data.data.sort((a:any, b:any) => {
+                switch(+sortType) {
+                    case 1:
+                        return a.name > b.name ? 1:-1
+                    case 2:
+                        return a.price > b.price ? 1:-1
+                    case 3:
+                        return a.star_average > b.star_average ? 1:-1
+                    case 4:
+                        return a.level > b.level ? 1:-1
+                    case 5:
+                        return a.experience > b.experience ? 1:-1
+                }
+            }).map((value:any) => {
+                console.log(value.address)
+                if (chooseShift == ''){
+                    if (filterValue.distance) {
+                        let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
+                        if (dist <= filterValue.distance) {
+                            validTeachers.push(value)
+                            count_teacher += 1
+                        }
+                    }
+                    else {
+                        validTeachers.push(value)
+                        count_teacher += 1
+                    }
+                } else {
+                    value.schedulers.forEach((schedule:any) => {
+                        if (schedule.shiftID == chooseShift &&times?.dayIDs.find((id:any) => id == schedule.weekdayID)){
+                            if (filterValue.distance) {
+                                let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
+                                if (dist <= filterValue.distance) {
+                                    validTeachers.push(value)
+                                    count_teacher += 1
+                                }
+                            }
+                            else {
+                                validTeachers.push(value)
+                                count_teacher += 1
+                            }
+                        } 
+                        if (times?.dayIDs.length == 0){
+                            validTeachers.push(value)
+                            count_teacher += 1
+                        }
+                    })
+                }
+            })
+            setTeachers(validTeachers)
+        }
+        if (data?.data?.infoPage) {
+            let pageInfo = data.data.infoPage
+            pageInfo.totalPages = Math.ceil(count_teacher/pageInfo.pageSize) 
+            setInfoPage(data.data.infoPage)
+        }
+    }, [data, times, table, filterValue])
   
     return (
         <Layout>
@@ -132,33 +245,20 @@ const SearchTeachersPage = () => {
                     </div>
                 </div>
                 <div className='flex flex-col gap-6'>
-                    {!error && teachers.length > 0 && teachers.sort(
-                        (a:any, b:any) => {
-                            switch(+sortType){
-                                case 1:
-                                    return a.name > b.name ? 1:-1
-                                case 2:
-                                    return a.price > b.price ? 1:-1
-                                case 3:
-                                    return a.star_average > b.star_average ? 1:-1
-                                case 4:
-                                    return a.level > b.level ? 1:-1
-                                case 5:
-                                    return a.experience > b.experience ? 1:-1
-                            }
-                        }).map((value: any, index: any) => (
+                    {!error && teachers.length > 0 && teachers.map(
+                        (value: any, index: any) => (
                             <div
                                 key={index}
                                 className='border border-solid gap-5 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
                             >
-                                <Link key={index} to={routePath.teacher.base + `/${value.id}`}>
+                                <Link key={index} to={routePath.teacher.view(value.id)}>
                                     <RenderAvatar avatar={value.avatar} />
                                 </Link>
                                 <div>
                                     <div className='flex justify-between items-center'>
                                         <div className='flex items-center justify-start text-xl gap-6'>
                                             <div className='font-semibold text-yellow-700'>{t('content.tutor')}</div>
-                                            <Link key={index} to={routePath.teacher.base + `/${value.id}`}>
+                                            <Link key={index} to={routePath.teacher.view(value.id)}>
                                                 <div className='font-semibold text-black'>{value.name}</div>
                                             </Link>
                                         </div>
@@ -167,10 +267,15 @@ const SearchTeachersPage = () => {
                                             <Star />
                                         </div>
                                     </div>
-                                <div className='flex my-2 gap-2'>
-                                    <EnvironmentOutlined className='text-purple-800 mt-1' />
-                                    <div className='text-sm text-purple-700'>{value.address}</div>
-                                </div>
+                                <button className='astext'>
+                                    <div className='flex my-2 gap-2' onClick={() => {
+                                        setTeacherLat(value.lat)
+                                        setTeacherLng(value.lng)
+                                    }}>
+                                        <EnvironmentOutlined className='text-purple-800 mt-1' />
+                                        <div className='text-sm text-purple-700'>{value.address}</div>
+                                    </div>
+                                </button>
                                 <div className='flex gap-10 text-sm'>
                                     <div>{t('content.age')} {value.age}</div>
                                     <div>{t('content.experience')}  {value.experience}</div>
@@ -188,6 +293,15 @@ const SearchTeachersPage = () => {
                             </div>
                         </div>
                     ))}
+                    {!error && teachers.length == 0 &&
+                        (   
+                            i18n.language == 'jp' && 
+                                <a>結果が見つかりませんでした</a>
+                        )||
+                        (   i18n.language == 'vi' &&
+                                <a>Không tìm thấy kết quả</a>
+                        )
+                    }
                     {!error && +infoPage?.totalPages > 0 && (
                         <Pagination
                             current={currentPage}
@@ -202,14 +316,27 @@ const SearchTeachersPage = () => {
                     }
                 </div>
             </div>
-            <div>
-                <div className='shadow-2xl p-6 bg-white'>
+                <div>
+                <div className='shadow-xl p-2 bg-white' style={{marginBottom: 10}}> 
+                    <TimeTables {...table_props} />
+                </div>
+                <div className='shadow-xl p-2 bg-white'>      
                     <Form autoComplete='off' form={form} onFinish={handleFinishForm} className='mb-1'>
+                        <div style={{marginBottom: 20}}></div>
+                        <Form.Item
+                            label={t('content.distance') + " (km)"}
+                            labelAlign='left'
+                            name='distance'
+                            rules={[{ required: false, message: 'Please input!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+
                         <Form.Item
                             label={t('content.level')}
                             labelAlign='left'
                             name='level'
-                            rules={[{ required: false, message: 'Please input your username!' }]}
+                            rules={[{ required: false, message: 'Please input!' }]}
                         >
                             <Select
                                 className='w-full'
@@ -221,8 +348,8 @@ const SearchTeachersPage = () => {
                                         { 
                                             value: idex + 1, 
                                             label: `${idex + 1}` 
-                                        })
-                                    )
+                                        }
+                                    ))
                                 }
                             />
                         </Form.Item>
@@ -230,7 +357,7 @@ const SearchTeachersPage = () => {
                             label={t('content.experience')}
                             labelAlign='left'
                             name='experience'
-                            rules={[{ required: false, message: 'Please input your username!' }]}
+                            rules={[{ required: false, message: 'Please input!' }]}
                         >
                             <Select
                                 className='w-full'
@@ -317,6 +444,9 @@ const SearchTeachersPage = () => {
                         </Form.Item>
                     </Form>
                 </div>
+                <div className="p-4" style={{marginTop: 20}}>
+                    <Map {...map_props}/>
+                </div>
             </div>
         </div>
     </div>
@@ -324,4 +454,3 @@ const SearchTeachersPage = () => {
 )}
   
 export default SearchTeachersPage
-  

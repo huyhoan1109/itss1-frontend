@@ -2,6 +2,7 @@
     "content": {
         "login": "ログイン",
         "signup": "登録",
+        "logout":"ログアウト",
         "japanese": "日本語",
         "vietnamese": "ベトナム語",
         "tutor": "家庭教師",
@@ -42,8 +43,12 @@
         "reject_student": "家庭教師は申し出を断りました。",
         "allow_student": "家庭教師は提案に同意しました。",
         "footer_intro": "私たちはチーちゃん会社であり、お客様に最高のサービスとテクノロジーを提供することに専念しています。",
-        "welcome_member": "SagaSuyのメンバーになって、おめでとうございました。",
+        "distance": "距離"
+    },
+    "message": {
         "welcome": "こんにちは",
+        "goodbye": "ご使用していただきありがとうございます",
+        "welcome_member": "SagaSuyのメンバーになって、おめでとうございました。",
         "error": "ちょっとエラーがあって、もう一度情報を確認して、待ってください。"
     }
 }

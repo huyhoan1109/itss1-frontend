@@ -24,6 +24,9 @@ const InfoUserPage = () => {
 
     useEffect(() => {
         if (data?.data?.data) setInfo(data.data.data)
+        return () => {
+            
+        }
     }, [data])
 
     return (

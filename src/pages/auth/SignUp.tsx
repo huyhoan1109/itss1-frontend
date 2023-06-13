@@ -28,7 +28,7 @@ const SignUpPage = () => {
             }
         }).then(() => {
             notification.success({
-                message:t('content.welcome_member')
+                message:t('message.welcome_member')
             })
             setName('')
             setEmail('')
@@ -38,7 +38,7 @@ const SignUpPage = () => {
             setRole('student')
         }).catch(() => {
             notification.error({
-                message: t('content.error') 
+                message: t('message.error') 
             })
         })
     }

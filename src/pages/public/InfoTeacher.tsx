@@ -5,6 +5,7 @@ import { Api } from '../../services/api';
 import { useParams, redirect } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
+import TimeTables from '../../components/TimeTable/TimeTables'
 
 const InfoTeacherPage = () => {
     const params = useParams()
@@ -14,17 +15,19 @@ const InfoTeacherPage = () => {
         queryFn: () => 
             Api.request({
                 method: 'GET',
-                url: routePath.teacher.base + `/${params.id}`
+                url: routePath.teacher.view(params.id||"")
             })
     })
 
     useEffect(() => {
         if (data?.data?.data) setInfo(data.data.data)
+        return () => {
+            
+        }
     }, [data])
 
     return (
         <Layout>
-            
         </Layout>
     );
 };

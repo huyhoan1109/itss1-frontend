@@ -2,6 +2,7 @@
     "content": {
         "login": "Đăng nhập",
         "signup": "Đăng ký",
+        "logout": "Thoát",
         "japanese": "Tiếng Nhật",
         "vietnamese": "Tiếng Việt",
         "tutor": "Gia sư",
@@ -42,8 +43,12 @@
         "reject_student": "Gia sư đã từ chối yêu cầu của bạn",
         "allow_student": "Gia sư đồng ý yêu cầu của bạn",
         "footer_intro": "Chúng tôi là チーちゃん, chuyên cung cấp dịch vụ, nền tảng công nghệ tốt nhất cho khách hàng.",
-        "welcome_member": "Bạn đã trở thành thành viên của cộng đồng Sagasuy",
+        "distance": "Khoảng cách"
+    },
+    "message": {
         "welcome": "Xin chào",
+        "goodbye": "Cảm ơn bạn đã dùng sản phẩm của chúng tôi. Hẹn gặp lại",
+        "welcome_member": "Bạn đã trở thành thành viên của cộng đồng Sagasuy",
         "error": "Có lỗi đang xảy ra. Vui lòng kiểm tra lại thông tin hoặc chờ trong giây lát"
     }
 }

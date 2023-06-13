@@ -59,6 +59,9 @@ const Comments = () => {
 
     useEffect(() => {
         if (data?.data?.data) setComments(data.data.data)
+        return () => {
+            
+        }
     },[data])
 
     return (
