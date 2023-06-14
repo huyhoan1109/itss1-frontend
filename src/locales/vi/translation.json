@@ -49,6 +49,9 @@
         "welcome": "Xin chào",
         "goodbye": "Cảm ơn bạn đã dùng sản phẩm của chúng tôi. Hẹn gặp lại",
         "welcome_member": "Bạn đã trở thành thành viên của cộng đồng Sagasuy",
-        "error": "Có lỗi đang xảy ra. Vui lòng kiểm tra lại thông tin hoặc chờ trong giây lát"
+        "error": "Có lỗi đang xảy ra. Vui lòng kiểm tra lại thông tin hoặc chờ trong giây lát",
+        "created_ok": "Đã tạo mới thành công",
+        "updated_ok": "Đã cập nhật lại thông tin",
+        "deleted_ok": "Xóa thành công"
     }
 }

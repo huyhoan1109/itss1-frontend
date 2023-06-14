@@ -1,0 +1,111 @@
+/* Custom styles */  
+.btn {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+}
+
+.popup {
+    @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 border border-gray-300 shadow-lg; 
+    width: 70%;
+    height: inherit;
+}
+
+.show-comment {
+    width: 100%;
+    height: 600px;
+    margin: auto;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.row-container {
+    @apply flex justify-center items-center h-1/5  mx-auto;
+}
+
+.row-left {
+    @apply w-2/3  p-2 h-20;
+}
+
+.row-left .comment {
+    @apply flex items-center;
+}
+
+.row-left .avatar {
+    @apply w-12 h-12 rounded-full bg-gray-300;
+}
+
+.row-left .info {
+    @apply ml-4;
+}
+
+.row-left .username {
+    @apply text-black font-bold;
+}
+
+.row-left .content {
+    @apply text-black;
+    max-width: 90%;
+}
+
+.row-right .fix-button {
+    margin-right: 20px;
+}
+
+.row-right {
+    display: flex;
+    justify-content: center;
+    width: 8%;
+}
+
+.row-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.row-center .star {
+    font-size: 24px;
+    color: #ccc;
+    margin-right: 4px;
+}
+
+.row-center .star-filled {
+    color: yellow;
+}
+
+.star-rating {
+    margin-top: 10px;
+}
+
+.login-btn {
+    margin-top: 20px;
+}
+
+.input-container {
+    @apply flex justify-center items-center h-32  mx-auto;
+}
+.input-left {
+    @apply  w-5/6
+}
+.input-center {
+    @apply items-center justify-center;
+    margin-left: 40px;
+}
+.rating-input{
+    width: 100%;
+    text-align: center;
+}
+
+.ant-select-selection {
+    background-color: transparent;
+}
+
+.select-star{
+    @apply border border-gray-400 rounded py-2 px-4 mr-2
+}
+.textarea {
+    @apply w-full h-24
+}
+.comment-button {
+    @apply flex-shrink-0 py-2 text-blue-500 border-none cursor-pointer text-4xl;
+    margin-top: 15px;
+    margin-left: 10px;
+}

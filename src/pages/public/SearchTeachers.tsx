@@ -159,58 +159,34 @@ const SearchTeachersPage = () => {
             }),
     })
 
+    const checkTeacher = (lists:Array<any>, teacherID:number) => {
+        for (let i=0; lists.length > i; i++){
+            if (lists[i]?.id == teacherID) return true
+        }
+        return false
+    }
+
     useEffect(() => {
         let count_teacher = 0
         if (data?.data?.data) {
             let validTeachers:any = []
-            data.data.data.sort((a:any, b:any) => {
-                switch(+sortType) {
-                    case 1:
-                        return a.name > b.name ? 1:-1
-                    case 2:
-                        return a.price > b.price ? 1:-1
-                    case 3:
-                        return a.star_average > b.star_average ? 1:-1
-                    case 4:
-                        return a.level > b.level ? 1:-1
-                    case 5:
-                        return a.experience > b.experience ? 1:-1
-                }
-            }).map((value:any) => {
-                console.log(value.address)
-                if (chooseShift == ''){
-                    if (filterValue.distance) {
-                        let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
-                        if (dist <= filterValue.distance) {
+            data.data.data.map((value:any) => {
+                let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
+                value.schedulers.forEach((schedule:any) => {
+                    let check_sch = true
+                    if (times?.dayIDs?.length > 0) check_sch = (times.dayIDs.find((id:any) => id == schedule.weekdayID)) && (schedule.shiftID == chooseShift)
+                    else check_sch = true
+                    let check_dist = true
+                    if (filterValue?.distance && filterValue.distance != '') check_dist = (filterValue?.distance >= dist)
+                    else check_dist = true
+                    if(check_sch && check_dist) {
+                        if (!checkTeacher(validTeachers, value.id)) {
                             validTeachers.push(value)
                             count_teacher += 1
                         }
                     }
-                    else {
-                        validTeachers.push(value)
-                        count_teacher += 1
-                    }
-                } else {
-                    value.schedulers.forEach((schedule:any) => {
-                        if (schedule.shiftID == chooseShift &&times?.dayIDs.find((id:any) => id == schedule.weekdayID)){
-                            if (filterValue.distance) {
-                                let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
-                                if (dist <= filterValue.distance) {
-                                    validTeachers.push(value)
-                                    count_teacher += 1
-                                }
-                            }
-                            else {
-                                validTeachers.push(value)
-                                count_teacher += 1
-                            }
-                        } 
-                        if (times?.dayIDs.length == 0){
-                            validTeachers.push(value)
-                            count_teacher += 1
-                        }
-                    })
-                }
+                })
+                
             })
             setTeachers(validTeachers)
         }
@@ -225,7 +201,7 @@ const SearchTeachersPage = () => {
         <Layout>
         <div className='bg-blue-200 p-10'>
             <div className='mx-auto max-w-7xl grid grid-cols-[2fr_1fr] gap-4'>
-                <div className='shadow-2xl p-6 bg-white'>
+                <div className='shadow-2xl p-6 bg-white rounded-2xl'>
                     <div className='flex justify-between items-center mb-6'>
                         <Dropdown menu={{ items, onClick:onClickSort }}>
                             <a>
@@ -245,8 +221,21 @@ const SearchTeachersPage = () => {
                     </div>
                 </div>
                 <div className='flex flex-col gap-6'>
-                    {!error && teachers.length > 0 && teachers.map(
-                        (value: any, index: any) => (
+                    {!error && teachers.length > 0 && teachers.sort(
+                        (a:any, b:any) => {
+                            switch(+sortType) {
+                                case 1:
+                                    return a.name > b.name ? 1:-1
+                                case 2:
+                                    return +a.price > +b.price ? 1:-1
+                                case 3:
+                                    return +a.star_average > +b.star_average ? 1:-1
+                                case 4:
+                                    return +a.level > +b.level ? 1:-1
+                                case 5:
+                                    return +a.experience > +b.experience ? 1:-1
+                            }
+                        }).map((value: any, index: any) => (
                             <div
                                 key={index}
                                 className='border border-solid gap-5 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
@@ -317,14 +306,14 @@ const SearchTeachersPage = () => {
                 </div>
             </div>
                 <div>
-                <div className='shadow-xl p-2 bg-white' style={{marginBottom: 10}}> 
+                <div className='shadow-xl p-2 bg-white rounded-xl' style={{marginBottom: 10}}> 
                     <TimeTables {...table_props} />
                 </div>
-                <div className='shadow-xl p-2 bg-white'>      
+                <div className='shadow-xl p-4 bg-white rounded-xl'>      
                     <Form autoComplete='off' form={form} onFinish={handleFinishForm} className='mb-1'>
                         <div style={{marginBottom: 20}}></div>
                         <Form.Item
-                            label={t('content.distance') + " (km)"}
+                            label={<div className='text-base'>{t('content.distance') + " (km)"}</div>}
                             labelAlign='left'
                             name='distance'
                             rules={[{ required: false, message: 'Please input!' }]}
@@ -333,7 +322,7 @@ const SearchTeachersPage = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label={t('content.level')}
+                            label={<div className='text-base'>{t('content.level')}</div>}
                             labelAlign='left'
                             name='level'
                             rules={[{ required: false, message: 'Please input!' }]}
@@ -354,7 +343,7 @@ const SearchTeachersPage = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            label={t('content.experience')}
+                            label={<div className='text-base'>{t('content.experience')}</div>}
                             labelAlign='left'
                             name='experience'
                             rules={[{ required: false, message: 'Please input!' }]}
@@ -376,24 +365,26 @@ const SearchTeachersPage = () => {
                             />
                         </Form.Item>
                         <div className='font-medium text-base mt-10'>{t('content.price')}</div>
+                        <div className='flex grid-cols-2 gap-4'>
+                            <Form.Item
+                                label={<div className='text-base'>{t('content.from')}</div>}
+                                labelAlign='left'
+                                name='low_price'
+                                rules={[{ required: false, message: 'Please input!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                label={<div className='text-base'>{t('content.to')}</div>}
+                                labelAlign='left'
+                                name='high_price'
+                                rules={[{ required: false, message: 'Please input!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </div>
                         <Form.Item
-                            label={t('content.from')}
-                            labelAlign='left'
-                            name='low_price'
-                            rules={[{ required: false, message: 'Please input!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            label={t('content.to')}
-                            labelAlign='left'
-                            name='high_price'
-                            rules={[{ required: false, message: 'Please input!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            label={t('content.gender')}
+                            label={<div className='text-base'>{t('content.gender')}</div>}
                             labelAlign='left'
                             name='gender'
                             rules={[{ required: false, message: 'Please input!' }]}
@@ -420,7 +411,7 @@ const SearchTeachersPage = () => {
                         <div className='font-medium text-base mt-10'>{t('content.age')}</div>
                         <div className='flex grid-cols-2 gap-4'>
                             <Form.Item
-                                label={t('content.from')}
+                                label={<div className='text-base'>{t('content.from')}</div>}
                                 labelAlign='left'
                                 name='low_age'
                                 rules={[{ required: false, message: 'Please input!' }]}
@@ -429,7 +420,7 @@ const SearchTeachersPage = () => {
                             </Form.Item>
                             <Form.Item
                                 className='flex-row'
-                                label={t('content.to')}
+                                label={<div className='text-base'>{t('content.to')}</div>}
                                 labelAlign='left'
                                 name='high_age'
                                 rules={[{ required: false, message: 'Please input!' }]}
@@ -439,7 +430,7 @@ const SearchTeachersPage = () => {
                         </div>
                         <Form.Item className='mt-10'>
                             <Button type='primary' className='bg-blue-500 w-full' htmlType='submit'>
-                                {t('content.filter')}
+                                {<div className='text-base'>{t('content.filter')}</div>}
                             </Button>
                         </Form.Item>
                     </Form>

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import {useState } from 'react';
 import {FaArrowCircleUp} from 'react-icons/fa';
 import styled from 'styled-components';
 
-const ScrollButton = () =>{
-  
+const ScrollButton = () => {
+
     const [visible, setVisible] = useState(false)
     
     const toggleVisible = () => {
@@ -14,7 +14,7 @@ const ScrollButton = () =>{
         else if (scrolled <= 300){
             setVisible(false)
         }
-    };
+    }
     
     const scrollToTop = () =>{
         window.scrollTo({

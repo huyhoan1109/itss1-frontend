@@ -1,11 +1,11 @@
 import Layout from "../../components/Layout"
 import useAuth from "../../hooks/useAuth"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, LegacyRef } from "react"
 import { routePath } from "../../routes/routePath"
 import {Button, Form, Input, Checkbox, notification} from "antd"
 
 import { Api } from "../../services/api"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { useTranslation } from "react-i18next"
 import Container from "../../components/Container"
@@ -17,7 +17,7 @@ const LoginPage = () => {
     const [email, setEmail] = useLocalStorage("email", "")
     const [password, setPassword] = useLocalStorage("password", "")
     const [passwordVisible, setPasswordVisible] = useState(false);
-
+    const [form] = Form.useForm()
     const handleSubmit = async () => {
         Api.request({
             method: 'POST',
@@ -34,13 +34,14 @@ const LoginPage = () => {
                 message: t('message.welcome') + ' ' + user.name
             })
             if (user.role == 'admin') navigate(routePath.admin.dashboard, {replace: true})
-            else return navigate(routePath.home, {replace: true});
+            return navigate(routePath.allTeachers, {replace: true});
         }).catch((err) => {
             notification.error({
                 message: t('message.error') 
             })
             console.log(err)
         })
+        form.resetFields(["email", "password"]);
     }
 
     const togglePersist = () => {
@@ -58,23 +59,22 @@ const LoginPage = () => {
     return (
         <Layout>
             <Container>
-                <Form>
+                <Form form={form}>
                     <Form.Item>
                         <Input 
-                            defaultValue={email}
-                            onChange={(e) => {
-                                setEmail(e.target.value)
-                            }}
+                            name="email"
+                            value={email}
+                            onChange={(e) => {setEmail(e.target.value)}}
                         />
                     </Form.Item>
                     <Form.Item>
                         <Input.Password 
+                            name="password"
                             type="password"
+                            value={password}
                             visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
                             defaultValue={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value)
-                            }}
+                            onChange={(e) => {setPassword(e.target.value)}}
                         />
                     </Form.Item>
                     <Form.Item>

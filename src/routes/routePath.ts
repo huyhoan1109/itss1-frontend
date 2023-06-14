@@ -1,5 +1,5 @@
 function path(root: string, sublink: string) {
-    return `${root}${sublink}`;
+    return `${root}/${sublink}`;
 }
 
 export const routePath = {
@@ -11,7 +11,7 @@ export const routePath = {
         forgotPassword: '/auth/forgot-password',
     },
     teacher: {
-        view: (id: string) => path('/teacher/info',`/${id}`),
+        view: (id: string) => path('/teacher/info',`${id}`),
         allStudents: '/teacher/your/students'
     },
     user: {
@@ -24,7 +24,8 @@ export const routePath = {
     },
     comment: {
         base: '/comment',
-        teacher: '/comment/teacher'
+        view: (id:string) => path('/comment',`${id}`),
+        teacher: (id: string) => path('/comment/teacher', `${id}`)
     },
     notFound: '*',
 }

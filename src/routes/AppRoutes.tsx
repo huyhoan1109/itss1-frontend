@@ -13,6 +13,7 @@ import StudentListPage from '../pages/teacher/StudentList'
 import InfoUserPage from '../pages/user/InfoUser'
 import DashboardPage from '../pages/admin/Dashboard'
 
+import CommentProvider from '../contexts/CommentProvider'
 
 const UserRoute = ({children}: any) => {
     const {auth} = useAuth()
@@ -40,7 +41,14 @@ const AppRoutes = () => {
             <Route path={routePath.auth.signup} element={<SignUpPage />} />
             <Route path={routePath.auth.forgotPassword} element={<ForgotPasswordPage />} />
             <Route path={routePath.allTeachers} element={<SearchTeachersPage />} />
-            <Route path={routePath.teacher.view(":id")} element={<InfoTeacherPage />} />
+            <Route 
+                path={routePath.teacher.view(":id")} 
+                element={
+                    <CommentProvider>          
+                        <InfoTeacherPage />
+                    </CommentProvider>
+                } 
+            />
 
             {/* { admin } */}
             <Route 

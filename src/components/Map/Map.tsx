@@ -6,14 +6,6 @@ export default function Map(props: MapProp) {
     
     const zoom = 17
 
-    useEffect(() => {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                console.log(position.coords.latitude, position.coords.longitude);
-            });
-        }
-    }, [props])
-    
     return (
         <MapContainer 
             center={[props.c_lat, props.c_lng]} zoom={zoom}
