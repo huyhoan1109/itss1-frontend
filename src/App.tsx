@@ -10,16 +10,14 @@ const queryClient = new QueryClient()
 
 const App = () => {
     return (
-        <div>
-            <QueryClientProvider client={queryClient}>
-                <I18nextProvider i18n={i18n}>
-                    <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <I18nextProvider i18n={i18n}>
+                <BrowserRouter>
                         <AppRoutes />
-                    </BrowserRouter>
-                    <ScrollButton />
-                </I18nextProvider>
-            </QueryClientProvider>
-        </div>
+                </BrowserRouter>
+                <ScrollButton />
+            </I18nextProvider>
+        </QueryClientProvider>
     )
 }
 

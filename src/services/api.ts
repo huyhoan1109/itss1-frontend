@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 
 const Api: AxiosInstance = axios.create({
-    baseURL: "http://localhost:5000",
-    timeout: 2000,
+    baseURL: "http://localhost:5050",
+    timeout: 10000,
     headers: {},
 })
 

@@ -1,10 +1,16 @@
 import "./Header.css";
-import { Link, NavLink } from "react-router-dom"
+import { Link, NavLink, useNavigate } from "react-router-dom"
 import Logo from "../../assets/images/logo.png";
 import { routePath } from '../../routes/routePath'
 import { useTranslation } from "react-i18next";
 import useAuth from "../../hooks/useAuth";
-import { notification } from "antd";
+import { Dropdown, notification, MenuProps } from "antd";
+import user_image from '../../assets/images/user.png'
+import { useEffect, useState } from "react";
+import {AiOutlineBell} from "react-icons/ai"
+import useNotifications from "../../hooks/useNotifications";
+import { Api } from "../../services/api";
+import NotificationBell from "../NotificationBell";
 
 function LanguageSwitcher(){
     const { t, i18n } = useTranslation();
@@ -23,16 +29,70 @@ function LanguageSwitcher(){
     )
 }
 
-export const Header = () => {
+export const Header = ({handleToggle}: any) => {
+    let navigate = useNavigate()
     const { t } = useTranslation()
     const {auth, setAuth} = useAuth()
     const handleLogout = () => {
         setAuth({})
         notification.success({
-            duration: 3,
+            duration: 1,
             message: t('message.goodbye')
         })
     }
+
+    const teacher_items: MenuProps['items'] = [
+        {
+            key: '1',
+            label: <div>{t('content.profile')}</div>,
+        },
+        {
+            key: '2',
+            label: <div>{t('content.your_student')}</div>
+        },
+        {
+            key: '3',
+            label: <div>{t('content.logout')}</div>,
+        },
+    ]
+
+    const user_items: MenuProps['items'] = [
+        {
+            key: '1',
+            label: <div>{t('content.profile')}</div>,
+        },
+        {
+            key: '2',
+            label: <div>{t('content.logout')}</div>,
+        },
+    ]
+
+    const [menu_items, setMenuItems] = useState<any>(user_items)
+
+    useEffect(() => {
+        if(auth?.user?.role == 'teacher') {
+            setMenuItems(teacher_items)      
+        } 
+    }, [])
+
+    const onClickToggle: MenuProps['onClick'] = (e) => {
+        switch(e.key) {
+            case '1':
+                return navigate(routePath.user.base)
+            case '2':
+                if(auth.user.role == 'teacher') {
+                    return navigate(routePath.teacher.allStudents)
+                }
+                else {
+                    handleLogout();
+                }
+                break
+            case '3':
+                handleLogout();
+                break
+        }
+    }
+
     return (
         <header className="header">
             <div className="scontainer flex">
@@ -70,15 +130,34 @@ export const Header = () => {
                     {
                         auth?.user &&
                         <div className="header-content">
-                            <div className="content-text">
-                                {auth?.user?.name}
+                            <NotificationBell />
+                            <div className="content-text" style={{fontSize: 18}}>
+                                {auth.user.name}
                             </div>
-                            <div className="content-text">
-                                <button className="astext" onClick={handleLogout}>{t('content.logout')} </button>
-                            </div>
-                            {/* <NavLink to={routePath.teacher.allStudents} className={({ isActive }) => (isActive ? 'active' : '')}>
-                                <button className="astext">student </button>
-                            </NavLink> */}
+                            {auth.user.avatar &&
+                                <Dropdown menu={{ items: menu_items, onClick:onClickToggle }}>
+                                    <img 
+                                        src={auth.user.avatar}
+                                        className='w-10 h-10 object-cover rounded-full border border-solid border-gray-500'
+                                        alt=''
+                                        style={{marginRight: "2%"}}
+                                        onError={({ currentTarget }) => {
+                                            currentTarget.onerror = null; // prevents looping
+                                            currentTarget.src = user_image
+                                        }}
+                                    />
+                                </Dropdown>
+                            }
+                            {!auth.user.avatar &&
+                                <Dropdown menu={{ items: menu_items, onClick:onClickToggle }}>
+                                <img 
+                                    src={user_image}
+                                    className='w-10 h-10 object-cover rounded-full border border-solid border-gray-500'
+                                    alt=''
+                                    style={{marginRight: 20}}
+                                />
+                                </Dropdown>
+                            }
                             <LanguageSwitcher />
                         </div>
                     }

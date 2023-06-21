@@ -43,7 +43,6 @@
 
 .row-left .content {
     @apply text-black;
-    max-width: 90%;
 }
 
 .row-right .fix-button {

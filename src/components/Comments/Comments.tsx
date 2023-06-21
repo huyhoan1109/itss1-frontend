@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState, RefObject, useRef, useCallback } from "react"
 import { Api } from "../../services/api"
 import { routePath } from "../../routes/routePath"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
 import { Select, Input, notification } from "antd"
 import {FaRegPaperPlane} from "react-icons/fa"
@@ -12,18 +12,19 @@ import { useTranslation } from "react-i18next"
 import useComment from "../../hooks/useComment"
 import user_image from '../../assets/images/user.png'
 
+
 const Comments = () => {
     const {t, i18n} = useTranslation()
+    const navigate = useNavigate()
     const params = useParams()
     const [y_comment, setYComment] = useState('')
-    const [star, setStar] = useState('1')
+    const [y_star, setYStar] = useState('1')
     const [fix_id, setFixId] = useState('')
     const [comments, setComments] = useState<any>([])
     const [currentPage, setCurrentPage] = useState<number>(1)
     const {auth, setAuth} = useAuth()
     const popRef:RefObject<any> = useRef()
     const {isPopUp, setIsPopUp} = useComment()
-    const [rerender, setRerender] = useState(false);
 
     const handleClickOutside = (e: any) => {
         if (popRef.current && !popRef.current.contains(e.target)){
@@ -40,8 +41,10 @@ const Comments = () => {
 
     const { TextArea } = Input;
 
-    const { isLoading, error, data } = useQuery({
+    const { refetch, data } = useQuery({
         queryKey: ['teacherComment', currentPage, params.id],
+        staleTime: 1500,
+        cacheTime: 1500,
         queryFn: () =>
             Api.request({
                 method: 'GET',
@@ -52,68 +55,73 @@ const Comments = () => {
                 },
             }),
     })
-    
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (auth?.token && y_comment != "") {
             if (fix_id == '') {
                 Api({
-                    method: 'post',
+                    method: 'POST',
                     url: routePath.comment.teacher(params.id||""),
                     headers: {
                         Authorization: `Bearer ${auth.token}`
                     },
                     data: {
                         content: y_comment,
-                        star
+                        star:y_star
                     }
-                }).then(() => {
+                }).then((res) => {
                     notification.success({
-                        duration: 3,
+                        duration: 1,
                         message: t('message.created_ok')
                     })
+                    setYComment('')
+                    setYStar('1')
+                    refetch()
                 }).catch(() => {
                     notification.error({
-                        duration: 3,
+                        duration: 1,
                         message: t('message.error')
                     })
                     setAuth({})
+                    return navigate(routePath.home, {replace: true})
                 })
             } else {
                 Api({   
-                    method: 'post',
+                    method: 'POST',
                     url: routePath.comment.view(fix_id),
                     headers: {
                         Authorization: `Bearer ${auth.token}`
                     },
                     data:{
                         content: y_comment,
-                        star 
+                        star:y_star
                     }
                 }).then(() => {
                     notification.success({
-                        duration: 3,
+                        duration: 1,
                         message: t('message.updated_ok')
                     })
+                    refetch()
                 }).catch(() => {
                     notification.error({
-                        duration: 3,
+                        duration: 1,
                         message: t('message.error')
                     })
+                    setAuth({})
+                    return navigate(routePath.home, {replace:true})
                 })
                 setFixId('')
             }
         } else {
             notification.error({
-                duration: 3,
+                duration: 1,
                 message: t('message.error')
-            })
+            })        
         }
-        setRerender(!rerender)
     }
 
     const chooseComment = (value:any) => {
         setYComment(value.content)
-        setStar(value.star)
+        setYStar(value.star)
         setFixId(value.id)
     }
 
@@ -127,24 +135,24 @@ const Comments = () => {
                 },
             }).then(() => {
                 notification.success({
-                    duration: 3,
+                    duration: 1,
                     message: t('message.deleted_ok')
                 })
-            }).catch(() => {
+                refetch()
+            }).catch((err) => {
                 notification.error({
-                    duration: 3,
+                    duration: 1,
                     message: t('message.error')
                 })
             })
         }
-        setRerender(!rerender)
     }
 
     useEffect(() => {
         if (data?.data?.data) {
             setComments(data.data.data)
         }
-    },[data, rerender])
+    },[data])
 
     return (
         <div ref={popRef} className="comments-section" id="comments-section">
@@ -152,10 +160,9 @@ const Comments = () => {
                 <div className="show-comment">
                     {
                         comments.map((value:any, idx:any) => {
-                            return (
-                                
+                            return (                    
                                 <div key={idx} role="button" className="row-container">
-                                    <div className="row-left">
+                                    <div className="row-left" style={{marginRight: 25}}>
                                         <div className="comment">
                                         <img 
                                             src={value.avatar || user_image} 
@@ -235,14 +242,14 @@ const Comments = () => {
                                 <div className="rating-input">
                                 <select 
                                     className="select-star" 
-                                    value={star} 
-                                    onChange={(e) => {setStar(e.target.value)}}
+                                    value={y_star} 
+                                    onChange={(e) => {setYStar(e.target.value)}}
                                 >
-                                    <option value={"1"} label="1" onClick={() => setStar("1")}/>
-                                    <option value={"2"} label="2" onClick={() => setStar("2")}/>
-                                    <option value={"3"} label="3" onClick={() => setStar("3")}/>
-                                    <option value={"4"} label="4" onClick={() => setStar("4")}/>
-                                    <option value={"5"} label="5" onClick={() => setStar("5")}/>
+                                    <option value={"1"} label="1" onClick={() => setYStar("1")}/>
+                                    <option value={"2"} label="2" onClick={() => setYStar("2")}/>
+                                    <option value={"3"} label="3" onClick={() => setYStar("3")}/>
+                                    <option value={"4"} label="4" onClick={() => setYStar("4")}/>
+                                    <option value={"5"} label="5" onClick={() => setYStar("5")}/>
                                 </select>
                                 </div>
                                 <button className="comment-button" onClick={handleSubmit}>

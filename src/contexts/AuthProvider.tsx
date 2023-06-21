@@ -1,10 +1,10 @@
-import { ReactNode, FC, useState, createContext, useCallback } from "react";
+import { ReactNode, FC, createContext } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 export const AuthContext = createContext<any>(null)
 
 const initAuthProvider = () => {
-    const [persist, setPersist] = useState(JSON.parse(localStorage.getItem('persist')||"")||false)
+    const [persist, setPersist] = useLocalStorage('persist', false)
     const [auth, setAuth] = useLocalStorage('auth', "")
     return {
         auth,

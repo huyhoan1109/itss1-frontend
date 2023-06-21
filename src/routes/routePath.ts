@@ -11,12 +11,15 @@ export const routePath = {
         forgotPassword: '/auth/forgot-password',
     },
     teacher: {
+        postInfo: '/teacher/your/info',
         view: (id: string) => path('/teacher/info',`${id}`),
-        allStudents: '/teacher/your/students'
+        allStudents: '/teacher/students',
+        matching: '/teacher/matching'
     },
     user: {
         base: '/user',
-        matching: '/matching'
+        matching: '/matching',
+        infoMatch: (id: string) => path('/matching/teacher', `${id}`) 
     },
     admin: {
         base: '/admin',

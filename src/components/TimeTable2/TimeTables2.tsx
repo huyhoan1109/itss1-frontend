@@ -1,10 +1,11 @@
-import {useEffect, useState,FC} from "react";
+import {useEffect, useState,FC, useCallback} from "react";
 import "./TimeTable.css";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 import TimeTableProp, { Shifts, DAYS_JP, DAYS_VI } from "../../types/TimeTableProp";
 
-const TimeTables: FC<TimeTableProp> = (prop :TimeTableProp) => {
+const TimeTables: FC<any> = (prop:TimeTableProp) => {
+    const [error, setError] = useState(true)
     const {i18n} = useTranslation()
     const { 
         chooseShift, 
@@ -19,30 +20,64 @@ const TimeTables: FC<TimeTableProp> = (prop :TimeTableProp) => {
         setShowWeekend
     } = prop
 
+    const checkIds = (list:Array<Array<number>>, shiftID:number, dayID:number) => {
+        if (shiftID < list.length) {
+            let find = list[shiftID].find((value) => value == dayID)
+            if (find == 0) return true
+            else return find
+        }
+        else {
+            return false
+        }
+    }
+
     const handleChoose = (dayID:number) => {
         let ids:Array<number> = []
-        let newTable = [false,false,false,false,false,false,false]
-        table.forEach((value, index) => {
-            if(index == dayID) {
+        let newTimes:any = []
+        let newTable = [false, false, false, false, false, false, false, false]
+        table.forEach((value: any, index:any) => {
+            if (dayID == index) {
                 newTable[index] = !value
+            } else {
+                newTable[index] = value
             }
-            else newTable[index] = value
         })
-        newTable.forEach((value, index) => {
+        newTable.forEach((value:any, index:any) => {
             if (value) ids.push(index)
         })
+        times.forEach((value:any, index:any) => {
+            if (index == chooseShift) {
+                newTimes[chooseShift] = ids
+            } else {
+                newTimes[index] = value
+            }
+        })
         setTable(newTable)
-        setTimes({shiftID: chooseShift, dayIDs: ids})
+        setTimes(newTimes)
     }
 
     useEffect(() => {
         if (i18n.language == 'jp') setWeekDays(DAYS_JP)
         if (i18n.language == 'vi') setWeekDays(DAYS_VI)
+        setError(false)
     }, [i18n.language])
 
     useEffect(() => {
-        setTable([false,false,false,false,false,false,false])
-        setTimes({shiftID: chooseShift, dayIDs: []})
+        let newTimes:any = []
+        Shifts.forEach(() => {
+            newTimes.push([])
+        })
+        setTimes(newTimes)
+    }, [])
+
+    useEffect(() => {
+        if (times.length > 0) {
+            let newTable = [false, false, false, false, false, false, false, false]
+            times[chooseShift].forEach((value:any, index:any) => {
+                newTable[value] = true
+            })
+            setTable(newTable)
+        }
     }, [chooseShift])
 
     return (
@@ -83,10 +118,11 @@ const TimeTables: FC<TimeTableProp> = (prop :TimeTableProp) => {
                     <Select 
                         className='w-full'
                         bordered={false}
+                        value={chooseShift}
                         options={ 
                             Shifts.map((shift, shiftID) => ({ 
-                                value: `${shiftID}`, 
-                                label: `${shift}` 
+                                value: shiftID, 
+                                label: shift 
                             }))
                         }
                         onSelect={(value, option) => {
@@ -105,7 +141,7 @@ const TimeTables: FC<TimeTableProp> = (prop :TimeTableProp) => {
                                         onClick={() => handleChoose(dayID)}
                                     >
                                         {
-                                            table[dayID] && <div>O</div>
+                                            checkIds(times,chooseShift, dayID) && <div>O</div>
                                         }
                                     </th>
                                 )

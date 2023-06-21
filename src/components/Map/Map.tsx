@@ -1,6 +1,14 @@
-import { MapContainer, TileLayer, Circle, Marker, Polyline  } from 'react-leaflet';
+import { MapContainer, TileLayer, Circle, Marker, Polyline, useMap  } from 'react-leaflet';
 import MapProp from "./MapProp";
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+
+const RecenterAutomatically = (props: MapProp) => {
+    const map = useMap();
+    useEffect(() => {
+        map.setView([props.c_lat, props.c_lng]);
+    }, [props.c_lat, props.c_lng]);
+    return null;
+}
 
 export default function Map(props: MapProp) {
     
@@ -23,6 +31,7 @@ export default function Map(props: MapProp) {
                 radius={200}
             />
             <Polyline positions={[[props.c_lat, props.c_lng], [props.lat, props.lng]]} color={'red'} />
+            <RecenterAutomatically {...props}/>
         </MapContainer>
     )
 }

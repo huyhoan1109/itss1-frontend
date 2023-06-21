@@ -22,7 +22,6 @@ const UserRoute = ({children}: any) => {
 
 const TeacherRoute = ({children}: any) => {
     const {auth} = useAuth()
-    console.log(auth?.user?.role)
     return auth?.user?.role == 'teacher' ? <>{children}</> : <Navigate to={routePath.auth.login} />
 }
 
@@ -34,7 +33,6 @@ const AdminRoute = ({children}: any) => {
 const AppRoutes = () => {
     const routes = (
         <Routes>
-            
             <Route path="/" element={<HomePage />} />
             <Route path={routePath.home} element={<HomePage />} />
             <Route path={routePath.auth.login} element={<LoginPage />} />
@@ -75,7 +73,7 @@ const AppRoutes = () => {
                 path={routePath.user.base} 
                 element={
                     <UserRoute>
-                        <InfoUserPage />
+                        <InfoUserPage/>
                     </UserRoute>
                 }
             />

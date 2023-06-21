@@ -12,7 +12,7 @@ const Footer = () => {
           theme.palette.mode === "light"
             ? theme.palette.grey[100]
             : theme.palette.grey[600],
-        p: 6,
+        p: 2,
       }}
     >
       <Container maxWidth="lg">

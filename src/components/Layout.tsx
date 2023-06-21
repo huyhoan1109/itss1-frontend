@@ -1,7 +1,8 @@
 import { Header } from "./Header/Header";
 import { Footer } from "./Footer/Footer";
 import styled from "styled-components"
-import {FC, ReactNode} from "react";
+import {useState, FC, ReactNode} from "react";
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -16,9 +17,19 @@ interface LayoutProps {
 }
 
 const Layout:FC<LayoutProps> = ({children}) => {
+    const [isActive, setActive] = useState<any>(false);
+
+    const handleToggle = () => {
+        setActive(!isActive);
+    }
     return (
         <Wrapper>
-            <Header />
+            <Header handleToggle={handleToggle} />
+                {
+                    isActive && (
+                        <div className="fixed">Hello</div>
+                    )
+                }
                 <main className='main'>
                     {/* <div className="border"> */}
                         {children}

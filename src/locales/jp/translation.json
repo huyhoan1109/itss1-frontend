@@ -2,6 +2,7 @@
     "content": {
         "login": "ログイン",
         "signup": "登録",
+        "signup_date": "登録日",
         "logout":"ログアウト",
         "japanese": "日本語",
         "vietnamese": "ベトナム語",
@@ -27,7 +28,7 @@
         "filter": "フィルター",
         "info_link": "連絡リンク",
         "month": "月",
-        "teach_method": "方法",
+        "teach_method": "学習方法",
         "certificate": "証書",
         "rating": "レーティング",
         "online": "オンライン",
@@ -43,16 +44,37 @@
         "reject_student": "家庭教師は申し出を断りました。",
         "allow_student": "家庭教師は提案に同意しました。",
         "footer_intro": "私たちはチーちゃん会社であり、お客様に最高のサービスとテクノロジーを提供することに専念しています。",
-        "distance": "距離"
+        "distance": "距離",
+        "go_back": "戻る",
+        "signup_wait": "登録進み",
+        "approve": "成功",
+        "refuse": "拒否",
+        "profile": "プロフィール",
+        "your_student": "ユーザーの学生",
+        "student": "学生",
+        "fix": "編集",
+        "password": "パースワード",
+        "c_password": "パースワード確認",
+        "remember_me": "ユーザーの状態を維持する",
+        "forgot_password": "パースワードを忘れ",
+        "update_profile": "プロフィールを更新",
+        "schedule":"スケジュール",
+        "detail": "紹介",
+        "agree": "同意",
+        "undefined": "なし"
     },
     "message": {
         "welcome": "こんにちは",
-        "goodbye": "ご使用していただきありがとうございます",
+        "goodbye": "ご使用していただきありがとうございます。",
         "welcome_member": "SagaSuyのメンバーになって、おめでとうございました。",
+        "check_password": "もう一度パースワードを確認してください。",
         "error": "ちょっとエラーがあって、もう一度情報を確認して、待ってください。",
-        "create": "新しい情報を作りました",
-        "created_ok": "新しい情報を作りました",
+        "create": "新しい情報を作りました。",
+        "created_ok": "新しい情報を作りました。",
         "updated_ok": "情報を編集しました。",
         "deleted_ok": "情報を消しました。"
+    },
+    "show": {
+        "comment": "評価を見る"
     }
 }
