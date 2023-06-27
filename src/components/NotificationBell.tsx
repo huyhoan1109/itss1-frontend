@@ -12,6 +12,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
     const {t, i18n} = useTranslation()
     return (
         <Menu
+            style={{overflowX: "hidden", overflowY: "scroll", height: "5"}}
             id="basic-menu"
             anchorEl={anchorEl}
             open={open}
@@ -23,19 +24,19 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                     onClick={handleClose}
                 >
                     {i18n.language == 'jp' && 
-                        ((auth.user.role == 'teacher' && 
+                        ((auth.user.role == 'teacher' &&
                             <a>{t('content.student')}{item.name}が登録しました</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.tutor')}{item.name}</a>
+                            <a>{t('content.tutor')}{item.name}が{t(`content.${item.status}`)}しました</a>
                         ))
                     }
                     {i18n.language == 'vi' && 
-                        ((auth.user.role == 'teacher' && 
-                            <a>{t('content.student')}{item.name} vừa đăng ký</a>   
+                        ((auth.user.role == 'teacher' && (item.status.localeCompare("wait") == 0) &&
+                            <a>{t('content.student')} {item.name} vừa đăng ký</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.tutor')}{item.name}</a>
+                            <a>{t('content.tutor')} {item.name} đã {t(`content.${item.status}`)}</a>
                         ))
                     }
                 </MenuItem>
@@ -50,8 +51,8 @@ const NotificationBell = ({ iconColor }:any) => {
     const [anchorEl, setAnchorEl] = useState<any>(null);
     const {notifications, setNotifications} = useNotifications()
     const [length, setLength] = useState(0)
+    
     useEffect(() => {
-        let count = 0
         Api({
             method: 'GET',
             url: routePath.user.matching,
@@ -59,16 +60,18 @@ const NotificationBell = ({ iconColor }:any) => {
                 Authorization: `Bearer ${auth.token}`
             },
         }).then((res) => {
+            let result = res.data.data
+            let wait_count = 0
+            result.forEach((value:any) => {
+                if(value.status.localeCompare("wait") == 0){
+                    wait_count += 1
+                }
+            })
             if (auth.user.role == 'student') {
-                let count = 0
-                res.data.data.forEach((value:any) => {
-                    if(value.status.localeCompare("wait") != 0){
-                        count += 1
-                    }
-                })
-                setLength(count)
+                setLength(result.length - wait_count)
+            } else {
+                setLength(wait_count)
             }
-            else setLength(res.data.data.length)
             setNotifications(res.data.data)
         })
     }, [])

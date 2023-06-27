@@ -2,7 +2,7 @@ import {useEffect, useState,FC} from "react";
 import "./TimeTable.css";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
-import TimeTableProp, { Shifts, DAYS_JP, DAYS_VI } from "../../types/TimeTableProp";
+import {TimeTableProp, Shifts, DAYS_JP, DAYS_VI } from "../../types/TimeTableProp";
 
 const TimeTables: FC<TimeTableProp> = (prop :TimeTableProp) => {
     const {i18n} = useTranslation()

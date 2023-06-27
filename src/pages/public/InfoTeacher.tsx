@@ -83,19 +83,19 @@ const InfoTeacherPage = () => {
     return (
         <Layout>
             <div className='h-700 w-full bg-blue-200'>
-            <Container className='py-40 flex items-end justify-center bg-blue-200'>
-                <div className='w-full h-300 rounded-xl p-8 shadow-md bg-white flex items-start justify-between gap-6'>
-                    <div style={{marginLeft: 50}}> 
+            <Container className='py-32 flex items-end justify-center bg-blue-200'>
+                <div className='w-[85%] h-300 rounded-xl p-4 shadow-md bg-white flex items-start gap-6'>
+                    <div style={{marginLeft: 30, marginTop: 30}}> 
                         <RenderAvatar avatar={info.avatar} />
                         {/* <div style={{marginTop: 10}}>{info.info_link}</div> */}
                     </div>
-                    <div className='flex flex-col gap-2'>
+                    <div className='flex flex-col gap-2' style={{marginTop: 30}}>
                         <div className='flex items-center '>
                             <div className='flex items-center gap-x-20'>
                                 <h1 style={{fontSize: 30}} className='font-semibold text-yellow-700 text-2xl'>{t('content.tutor')}</h1>
                                 <h1 style={{fontSize: 30}} className='font-semibold text-black text-2xl'>{info.name}</h1>
                             </div>
-                            <div style={{marginLeft: 500}}>
+                            <div style={{marginLeft: 400}}>
                                 <div className="flex items-center mt-2 mb-4">
                                     {
                                         [1, 2, 3, 4, 5].map((star, index) => {
@@ -182,7 +182,7 @@ const InfoTeacherPage = () => {
                         <span style={{fontSize: 18}}>{info.detail}</span>
                     </div>
 
-                    <div className='flex items-center gap-60' style={{marginTop: 30}}>
+                    <div className='flex items-center gap-60' style={{marginTop: 30, marginBottom: 30}}>
                         
                         <Button size='large' style={{fontSize: 18}} className='w-fit bg-blue-600 text-white !px-10' onClick={() => navigate(-1)}>
                         {t('content.go_back')}

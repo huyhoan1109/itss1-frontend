@@ -8,7 +8,6 @@ import { Api } from "../../services/api"
 import { useNavigate } from "react-router-dom"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { useTranslation } from "react-i18next"
-import Container from "../../components/Container"
 import appLogout from "../../services/appLogout"
 
 const LoginPage = () => {
@@ -60,62 +59,91 @@ const LoginPage = () => {
     }, [persist])
     return (
         <Layout>
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 100, height: 400}}>
-                <div style={{ width: 400, padding: 20, border: '3px solid #ddd', borderRadius: 6 }}>
-                <h1 style={{ textAlign: 'center', fontSize: 30}}>{t('content.login')}</h1>
-                <Form form={form} onFinish={handleSubmit}>
-                    <Form.Item>
-                        <Input 
-                            size="large"
-                            name="email"
-                            value={email}
-                            placeholder={t('content.email')||""}
-                            onChange={(e) => {setEmail(e.target.value)}}
-                        />
-                    </Form.Item>
-                    <Form.Item>
-                        <Input.Password 
-                            size="large"
-                            name="password"
-                            type="password"
-                            placeholder={t('content.password')||""}
-                            visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
-                            value={password}
-                            onChange={(e) => {setPassword(e.target.value)}}
-                        />
-                    </Form.Item>
-                    <Form.Item>
-                        <Checkbox 
-                            style={{fontSize: 18}}
-                            onChange={togglePersist}
-                            checked={persist}
-                        >
-                            <div style={{fontSize: 18}}>{t('content.remember_me')}</div>    
-                        </Checkbox>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button size="middle" htmlType="submit" block>
-                            <div style={{fontSize: 16}}>{t('content.login')}</div>
-                        </Button>
-                    </Form.Item>
-                    <div style={{ textAlign: 'center' }}> 
-                        {
-                            i18n.language == 'vi' && 
-                            <div style={{fontSize: 18}}>
-                                Chưa có tài khoản?  <a href={routePath.auth.signup} style={{marginLeft: 20, color: "blue"}}>{t('content.signup')}</a>
+
+
+            <div className="flex">
+                <div className="w-1/5 mx-auto" style={{marginTop: "5%"}}>
+                <div style={{ padding: 30, border: '3px solid', borderRadius: 20 }}>
+                    <Form form={form} onFinish={handleSubmit} style={{marginLeft: "5%", marginRight:"5%"}}>
+                        <h1 style={{fontSize: 30, marginBottom: "5%" }}>SaGaSuy</h1>
+                        <Form.Item>
+                            <Input 
+                                size="large"
+                                name="email"
+                                value={email}
+                                placeholder={t('content.email')||""}
+                                onChange={(e) => {setEmail(e.target.value)}}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Input.Password 
+                                size="large"
+                                name="password"
+                                type="password"
+                                placeholder={t('content.password')||""}
+                                visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
+                                value={password}
+                                onChange={(e) => {setPassword(e.target.value)}}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <div style={{float: "right", width: "40%"}}>
+                            <Button style={{borderColor: "blue"}} size="middle" htmlType="submit" block>
+                                <div style={{fontSize: 16}}>{t('content.login')}</div>
+                            </Button>
                             </div>
-                        }
-                        {
-                            i18n.language == 'jp' &&  
-                            <div style={{fontSize: 18}}>
-                                アカウントがない?  <a href={routePath.auth.signup} style={{marginLeft: 20, color: "blue"}}>{t('content.signup')}</a>
+                        </Form.Item>
+                        <Form.Item>
+                            <div className="flex gap-x-2" style={{float: "right"}}> 
+                                <div style={{fontSize: 16}}>{t('content.remember_me')}</div>
+                                <Checkbox 
+                                    onChange={togglePersist}
+                                    checked={persist}
+                                />
                             </div>
-                        }
-                        <div style={{marginTop: 10}}>
-                        <a href={routePath.auth.forgotPassword} style={{fontSize: 18, marginLeft: 20, color: "blue"}}>{t('content.forgot_password')}</a>
+                        </Form.Item>
+                        <Form.Item>
+                        <div style={{float: "right", width: "80%"}}>
+                            <Button style={{textAlign: "center", fontSize: 16, borderColor: "blue"}} size="middle" htmlType="submit" block>
+                                {
+                                    i18n.language == 'vi' && 
+                                    <a 
+                                        href={routePath.auth.signup} 
+                                    >
+                                        Tạo tài khoản mới
+                                    </a>
+                                }
+                                {
+                                    i18n.language == 'jp' &&  
+                                    <a 
+                                        href={routePath.auth.signup} 
+                                    >
+                                        新しいアカウントを作成
+                                    </a>
+                                }
+                            </Button>
                         </div>
-                    </div>
-                </Form>
+                        </Form.Item>
+                        <div className="flex gap-x-2" style={{float: "right", textDecoration: "underline"}}> 
+                            {
+                                i18n.language == 'vi' && 
+                                <a 
+                                    href={routePath.auth.forgotPassword} 
+                                >
+                                    Quên mật khẩu
+                                </a>
+                            }
+                            {
+                                i18n.language == 'jp' &&  
+                                <a 
+                                    href={routePath.auth.forgotPassword} 
+                                >
+                                    パスワード忘れた場合
+                                </a>
+                            }
+                        </div>
+                    </Form>
+                </div>
             </div>
             </div>
         </Layout>

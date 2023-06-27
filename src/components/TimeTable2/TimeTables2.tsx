@@ -2,10 +2,9 @@ import {useEffect, useState,FC, useCallback} from "react";
 import "./TimeTable.css";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
-import TimeTableProp, { Shifts, DAYS_JP, DAYS_VI } from "../../types/TimeTableProp";
+import { TimeTableProp2, Shifts, DAYS_JP, DAYS_VI } from "../../types/TimeTableProp";
 
-const TimeTables: FC<any> = (prop:TimeTableProp) => {
-    const [error, setError] = useState(true)
+const TimeTables2: FC<any> = (props: TimeTableProp2) => {
     const {i18n} = useTranslation()
     const { 
         chooseShift, 
@@ -17,9 +16,10 @@ const TimeTables: FC<any> = (prop:TimeTableProp) => {
         times, 
         setTimes, 
         showWeekend, 
-        setShowWeekend
-    } = prop
-
+        setShowWeekend,
+        schedulers
+    } = props
+    
     const checkIds = (list:Array<Array<number>>, shiftID:number, dayID:number) => {
         if (shiftID < list.length) {
             let find = list[shiftID].find((value) => value == dayID)
@@ -30,6 +30,22 @@ const TimeTables: FC<any> = (prop:TimeTableProp) => {
             return false
         }
     }
+
+    useEffect(() => {
+        let newTimes:any = []
+        Shifts.forEach(() => {
+            newTimes.push([])
+        })
+        let newTable = [false, false, false, false, false, false, false, false]
+        schedulers.forEach((schedule:any) => {
+            newTimes[schedule.shiftID].push(schedule.weekdayID)
+            if (chooseShift == schedule.shiftID) {
+                newTable[schedule.weekdayID] = true
+            } 
+        })
+        setTimes(newTimes)
+        setTable(newTable)
+    }, [schedulers])
 
     const handleChoose = (dayID:number) => {
         let ids:Array<number> = []
@@ -55,20 +71,6 @@ const TimeTables: FC<any> = (prop:TimeTableProp) => {
         setTable(newTable)
         setTimes(newTimes)
     }
-
-    useEffect(() => {
-        if (i18n.language == 'jp') setWeekDays(DAYS_JP)
-        if (i18n.language == 'vi') setWeekDays(DAYS_VI)
-        setError(false)
-    }, [i18n.language])
-
-    useEffect(() => {
-        let newTimes:any = []
-        Shifts.forEach(() => {
-            newTimes.push([])
-        })
-        setTimes(newTimes)
-    }, [])
 
     useEffect(() => {
         if (times.length > 0) {
@@ -153,4 +155,4 @@ const TimeTables: FC<any> = (prop:TimeTableProp) => {
         </div>
         );
 };
-export default TimeTables;
+export default TimeTables2;

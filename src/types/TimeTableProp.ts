@@ -36,7 +36,7 @@ export const Shifts = [
 ];
 
 
-export default interface TimeTableProp {
+export interface TimeTableProp {
     chooseShift: any,
     setChooseShift: (value: any) => void,
     table: Array<boolean>,
@@ -47,4 +47,18 @@ export default interface TimeTableProp {
     setShowWeekend: (value: boolean) => void,
     times: any, 
     setTimes: (value: any) => void
+}
+
+export interface TimeTableProp2 {
+    chooseShift: any,
+    setChooseShift: (value: any) => void,
+    table: Array<boolean>,
+    setTable: (value: Array<boolean>)  => void,
+    weekdays: any, 
+    setWeekDays: (value: any) => void,
+    showWeekend: boolean,
+    setShowWeekend: (value: boolean) => void,
+    times: any, 
+    setTimes: (value: any) => void,
+    schedulers: any
 }

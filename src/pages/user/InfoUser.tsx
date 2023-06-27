@@ -12,20 +12,20 @@ import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { BsPencil } from 'react-icons/bs';
 import { EnvironmentOutlined, PhoneFilled, MailOutlined, CaretDownOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom';
-import { Box, Dialog, Stack, Typography } from "@mui/material";
-import TimeTableProp, { Shifts } from "../../types/TimeTableProp";
-import TimeTables from '../../components/TimeTable2/TimeTables2';
+import { Box, Stack, Typography } from "@mui/material";
+import {TimeTableProp2, DAYS_JP, Shifts } from "../../types/TimeTableProp";
+import TimeTables2 from '../../components/TimeTable2/TimeTables2';
 import { PersonOutlined } from '@mui/icons-material';
 
 const InfoUserPage = () => {
 
     const [chooseShift, setChooseShift] = useState<number>(0)
     const [table, setTable] = useState([false,false,false,false,false,false,false])
-    const [weekdays, setWeekDays] = useState<any>([])
+    const [weekdays, setWeekDays] = useState<any>(DAYS_JP)
     const [showWeekend, setShowWeekend] = useState(false);
     const [times, setTimes] = useState<any>([])
-    
-    let table_props: TimeTableProp = {
+    const [schedulers, setSchedulers] = useState<any>([])
+    let table_props: TimeTableProp2 = {
         chooseShift, 
         setChooseShift, 
         table, 
@@ -35,14 +35,14 @@ const InfoUserPage = () => {
         times, 
         setTimes, 
         showWeekend, 
-        setShowWeekend
+        setShowWeekend,
+        schedulers
     }
     
     let navigate = useNavigate()
     const {t, i18n} = useTranslation()
     const {auth, setAuth} = useAuth()
     const [info, setInfo] = useState<any>({})
-    const [visibleDiag, setVisibleDiag] = useState(false)
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [form] = Form.useForm()
     const { refetch, error, data } = useQuery({
@@ -50,7 +50,7 @@ const InfoUserPage = () => {
         queryFn: () => 
             Api({
                 method: 'GET',
-                url: routePath.user.base,
+                url: auth.user.role == 'student' ? routePath.user.base : routePath.teacher.info,
                 headers: {
                     Authorization: `Bearer ${auth.token}`
                 },
@@ -64,22 +64,27 @@ const InfoUserPage = () => {
 
     useEffect(() => {
         if (data?.data?.data) {
-            let teach_methods:CheckboxValueType[] = []
             let result = data.data.data
-            let {teach_method1, teach_method2, teach_method3, ...rest} = result
-            if (teach_method1 != null){
-                teach_methods.push(teach_method1)
+            if (auth.user.role == 'teacher') {
+                let teach_methods:CheckboxValueType[] = []
+                let {teach_method1, teach_method2, teach_method3, ...rest} = result
+                if (teach_method1 != null){
+                    teach_methods.push(teach_method1)
+                }
+                if (teach_method2 != null){
+                    teach_methods.push(teach_method2)
+                }
+                if (teach_method3 != null){
+                    teach_methods.push(teach_method3)
+                }
+                if (data?.data?.schedulers) {
+                    setInfo({...rest, teach_methods})
+                    setSchedulers(data.data.schedulers)
+                } 
+                setInfo({...rest, teach_methods})
+            } else {
+                setInfo(result)
             }
-            if (teach_method2 != null){
-                teach_methods.push(teach_method2)
-            }
-            if (teach_method3 != null){
-                teach_methods.push(teach_method3)
-            }
-            setInfo({...rest, teach_methods})
-        }
-        return () => {
-            setInfo({})
         }
     }, [data])
 
@@ -90,31 +95,34 @@ const InfoUserPage = () => {
         let password = formValue.password || info.password
         let address = formValue.address || info.address
         let gender = formValue.gender || info.gender
-        Api({
-            method: 'POST',
-            url: routePath.user.base,
-            headers: {
-                Authorization: `Bearer ${auth.token}`
-            },
-            data:{
-                name,
-                phone,
-                password,
-                address,
-                gender
-            }
-        }).then(() => {
-            // setAuth({user: res.data.data, token: auth.token, timeout: auth.timeout})
-            notification.success({
-                message: t('message.updated_ok')
+        if (auth.user.role == 'student') {
+            Api({
+                method: 'POST',
+                url: routePath.user.base,
+                headers: {
+                    Authorization: `Bearer ${auth.token}`
+                },
+                data:{
+                    name,
+                    phone,
+                    password,
+                    address,
+                    gender
+                }
+            }).then(() => {
+                if (auth.user.role == 'student') {
+                    notification.success({
+                        message: t('message.updated_ok')
+                    })
+                }
+            }).catch(() => {
+                notification.error({
+                    message: t('message.error')
+                })
+                setAuth({})
+                return navigate(routePath.auth.login)
             })
-        }).catch(() => {
-            notification.error({
-                message: t('message.error')
-            })
-            setAuth({})
-            return navigate(routePath.auth.login)
-        })
+        }
         if (auth.user.role == 'teacher') {
             let age = formValue.age || info.age
             let level = formValue.level || info.level
@@ -128,13 +136,26 @@ const InfoUserPage = () => {
             let certificate3 = formValue.certificate3 || info.certificate3
             let info_link = formValue.info_link || info.info_link
             let detail = formValue.detail || info.detail
+            let schedulers:any = []
+            times.forEach((value:any, index:any) => {
+                if (value.length > 0) {
+                    schedulers.push({shiftID:index, value})
+                }
+            })
             Api({
                 method: 'POST',
-                url: routePath.teacher.postInfo,
+                url: routePath.teacher.info,
                 headers: {
                     Authorization: `Bearer ${auth.token}`
                 },
                 data:{
+                    user_info: {
+                        name,
+                        phone,
+                        password,
+                        address,
+                        gender
+                    },
                     teacher_info: {
                         age,
                         level,
@@ -149,16 +170,16 @@ const InfoUserPage = () => {
                         info_link,
                         detail
                     }, 
-                    schedulers: {
-                        times
-                    }
+                    schedulers
                 }
             }).then(() => {
                 notification.success({
+                    duration: 1,
                     message: t('message.updated_ok')
                 })
             }).catch(() => {
                 notification.error({
+                    duration: 1,
                     message: t('message.error')
                 })
             })      
@@ -170,6 +191,7 @@ const InfoUserPage = () => {
 
     return (
         <Layout>
+            <div className='flex items-center justify-center'>
             {auth.user.role == 'student' && 
             <div className='h-180 w-full bg-blue-200'>
             <Container className='py-10 flex items-end justify-center bg-blue-200'>
@@ -230,246 +252,229 @@ const InfoUserPage = () => {
             }
             {
                 auth.user.role == 'teacher' && 
-                <div 
-                    className="fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue p-4 border border-gray-300 shadow-lg"
-                    style={{top: "43%", width: "70%", height: "inherit"}}
+                <Form 
+                    style={{padding: 10, border: '3px solid', borderRadius: 20, marginTop: 20, marginBottom: 20}}
+                    form={form} 
+                    onFinish={handleSubmit} 
                 >
-                    <Form 
-                        form={form} 
-                        onFinish={handleSubmit} 
-                    >
-                        <Stack direction="row" flex={1}>
-                            <Stack direction="column" style={{marginTop: "2%", marginLeft: "2%"}}>
-                                <div className="relative">
-                                    <RenderAvatar avatar={info.avatar}/>
-                                    <Button onClick={() => setVisibleDiag(true)} className="absolute bottom-0 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
-                                        <BsPencil color='blue'/>
-                                    </Button>                   
-                                </div>
-                            </Stack>
-                            <Stack direction="column" flex={1} margin={"2%"}>
-                                <Stack direction="row">
-                                    <Stack direction="column" marginRight={"4%"}>
-                                    <Typography>
-                                        <Form.Item name="name" label={<div style={{fontSize: 18}}>{t('content.name')}</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.name} name="name" />
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="email" label={<div style={{fontSize: 18}}>{t('content.email')}</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.email} name="email" disabled/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="password" label={<div style={{fontSize: 18}}>{t('content.password')}</div>} >
-                                            <Input.Password 
-                                                style={{fontSize: 16}} 
-                                                type="password" 
-                                                name="password"
-                                                visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
-                                            />
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="phone" label={<div style={{fontSize: 18}}>{t('content.phone')}</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.phone} name="phone"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="address" label={<div style={{fontSize: 18}}>{t('content.address')}</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.address} name="address"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="gender" label={<div style={{fontSize: 18}}>{t('content.gender')}</div>} >
-                                            <Select
-                                                style={{fontSize: 16}}
-                                                defaultValue='male'
-                                                suffixIcon={<CaretDownOutlined className='text-black' />}
-                                                options={[
-                                                    { 
-                                                        value: 'male', 
-                                                        label: <div style={{fontSize: 16}}>{t('content.male')}</div> 
-                                                    },
-                                                    { 
-                                                        value: 'female', 
-                                                        label: <div style={{fontSize: 16}}>{t('content.female')}</div> 
-                                                    },
-                                                    { 
-                                                        value: 'none', 
-                                                        label: <div style={{fontSize: 16}}>{t('content.null')}</div> 
-                                                    },
-                                                ]}
-                                            />
-                                        </Form.Item>
-                                    </Typography>
-                                    </Stack>
-                                    <Stack direction="column" marginRight={"4%"}>
-                                    <Typography>
-                                        <Form.Item name="age" label={<div style={{fontSize: 18}}>{t('content.age')}</div>} >
-                                            <InputNumber style={{fontSize: 16}} placeholder={info.age} value={info.age} name="age"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item 
-                                            key={info.experience ? 'loaded': 'notLoaded'} 
-                                            style={{width: "70%"}}
-                                            initialValue={info.experience} 
-                                            name="experience" 
-                                            label={<div style={{fontSize: 18}}>{t('content.experience')}</div>} 
-                                        >
-                                            <Select
-                                                style={{fontSize: 16}}
-                                                value={info.experience||1}
-                                                suffixIcon={<CaretDownOutlined className='text-black' />}
-                                                options={
-                                                    [...Array(5)]
-                                                    .map((value, idex) => (
-                                                        { 
-                                                            value: idex + 1, 
-                                                            label: `${idex + 1}` 
-                                                        }
-                                                    )
-                                                    )
-                                                }
-                                            />
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item 
-                                            name="price" 
-                                            label={<div style={{fontSize: 18}}>{t('content.price')} (VND/45m)</div>} 
-                                        >
-                                            <InputNumber 
-                                                style={{fontSize: 16}} 
-                                                placeholder={info.price} 
-                                                name="price"
-                                            />
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item 
-                                            style={{width: "70%"}}
-                                            key={info.level ? 'loaded': 'notLoaded'} 
-                                            initialValue={info.level} 
-                                            name="level" 
-                                            label={<div style={{fontSize: 18}}>{t('content.level')}</div>} 
-                                        >
+                    <Stack direction="row" flex={1}>
+                        <Stack direction="column" style={{marginTop: "2%", marginLeft: "2%"}}>
+                            <div className="relative">
+                                <RenderAvatar avatar={info.avatar}/>
+                                <Button className="absolute bottom-0 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
+                                    <BsPencil color='blue'/>
+                                </Button>                   
+                            </div>
+                        </Stack>
+                        <Stack direction="column" flex={1} margin={"2%"}>
+                            <Stack direction="row">
+                                <Stack direction="column" marginRight={"4%"}>
+                                <Typography>
+                                    <Form.Item name="name" label={<div style={{fontSize: 18}}>{t('content.name')}</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.name} name="name" />
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="email" label={<div style={{fontSize: 18}}>{t('content.email')}</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.email} name="email" disabled/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="password" label={<div style={{fontSize: 18}}>{t('content.password')}</div>} >
+                                        <Input.Password 
+                                            style={{fontSize: 16}} 
+                                            type="password" 
+                                            name="password"
+                                            visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
+                                        />
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="phone" label={<div style={{fontSize: 18}}>{t('content.phone')}</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.phone} name="phone"/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="address" label={<div style={{fontSize: 18}}>{t('content.address')}</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.address} name="address"/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="gender" label={<div style={{fontSize: 18}}>{t('content.gender')}</div>} >
                                         <Select
+                                            style={{fontSize: 16}}
+                                            defaultValue='male'
+                                            suffixIcon={<CaretDownOutlined className='text-black' />}
+                                            options={[
+                                                { 
+                                                    value: 'male', 
+                                                    label: <div style={{fontSize: 16}}>{t('content.male')}</div> 
+                                                },
+                                                { 
+                                                    value: 'female', 
+                                                    label: <div style={{fontSize: 16}}>{t('content.female')}</div> 
+                                                },
+                                                { 
+                                                    value: 'none', 
+                                                    label: <div style={{fontSize: 16}}>{t('content.null')}</div> 
+                                                },
+                                            ]}
+                                        />
+                                    </Form.Item>
+                                </Typography>
+                                </Stack>
+                                <Stack direction="column" marginRight={"4%"}>
+                                <Typography>
+                                    <Form.Item name="age" label={<div style={{fontSize: 18}}>{t('content.age')}</div>} >
+                                        <InputNumber style={{fontSize: 16}} placeholder={info.age} value={info.age} name="age"/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item 
+                                        key={info.experience ? 'loaded': 'notLoaded'} 
+                                        style={{width: "70%"}}
+                                        initialValue={info.experience} 
+                                        name="experience" 
+                                        label={<div style={{fontSize: 18}}>{t('content.experience')}</div>} 
+                                    >
+                                        <Select
+                                            style={{fontSize: 16}}
+                                            value={info.experience||1}
                                             suffixIcon={<CaretDownOutlined className='text-black' />}
                                             options={
-                                                [...Array(7)]
+                                                [...Array(5)]
                                                 .map((value, idex) => (
                                                     { 
                                                         value: idex + 1, 
                                                         label: `${idex + 1}` 
                                                     }
-                                                ))
+                                                )
+                                                )
                                             }
                                         />
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item 
-                                            key={info.teach_methods ? 'loaded': 'notLoaded'} 
-                                            initialValue={info.teach_methods} 
-                                            name='teach_methods' 
-                                            label={<div style={{fontSize: 18}}>{t('content.teach_method')}</div>} 
-                                        >
-                                            <Checkbox.Group 
-                                                style={{ width: '100%', fontSize: 18}} 
-                                                name='teach_methods'
-                                                options={[
-                                                    {
-                                                        label: <div style={{fontSize: 16}}>{t('content.online')}</div>,
-                                                        value: "online"
-                                                    },
-                                                    {
-                                                        label: <div style={{fontSize: 16}}>{t('content.offline1')}</div>,
-                                                        value: "offline1"
-                                                    },
-                                                    {
-                                                        label: <div style={{fontSize: 16}}>{t('content.offline2')}</div>,
-                                                        value: "offline2"
-                                                    }
-                                                ]}
-                                                onChange={(e) => {
-                                                    
-                                                }}
-                                            >
-                                            </Checkbox.Group>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="info_link" label={<div style={{fontSize: 18}}>{t('content.info_link')}</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.info_link} name="info_link"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    </Stack>
-                                    <Stack direction="column">
-                                    <Typography>
-                                        <Form.Item name="certificate1" label={<div style={{fontSize: 18}}>{t('content.certificate')} 1</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.certificate1} name="certificate1"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="certificate2" label={<div style={{fontSize: 18}}>{t('content.certificate')} 2</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.certificate2} name="certificate2"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    <Typography>
-                                        <Form.Item name="certificate3" label={<div style={{fontSize: 18}}>{t('content.certificate')} 3</div>} >
-                                            <Input style={{fontSize: 16}} placeholder={info.certificate3} name="certificate3"/>
-                                        </Form.Item>
-                                    </Typography>
-                                    </Stack>
-                                </Stack>
-                                {/* <div className="flex gap-x-4" style={{fontSize: 18}}>
-                                        {t('content.schedule')}: {times.map((value:any, index:any) => {
-                                                if (value.length > 0) {
-                                                    return (
-                                                        <div key={index} className="flex" style={{fontSize: 18, marginRight: 10}}>({Shifts[index]}: {value.map((dayID:any, idx:any) => {
-                                                            return (
-                                                                <a key={idx} style={{marginRight: 2}}>{weekdays[dayID]}</a>
-                                                            )
-                                                        })})</div>
-                                                    )
-                                                }
-                                            })
-                                        }
-                                </div>
-                                <div style={{marginTop: 10}}>
-                                    <TimeTables {...table_props} />
-                                </div> */}
-
-                                <Form.Item name="detail" label={<div style={{fontSize: 18}}>{t('content.detail')}</div>} >
-                                    <TextArea 
-                                        placeholder={info.detail} 
-                                        style={{fontSize: 18}}
-                                        autoSize={{ minRows: 4, maxRows: 5 }}
-                                    />
-                                </Form.Item>
-
-                                <Box sx={{ display: "flex", justifyContent: "center"}}>
-                                    <Button
-                                        size="large"
-                                        style={{
-                                            color: "#111111",
-                                            borderColor: "#3B5B95",
-                                            minWidth: "3%",
-                                            fontWeight: "bold",
-                                            fontSize: 18,
-                                        }}
-                                        htmlType='submit'
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item 
+                                        name="price" 
+                                        label={<div style={{fontSize: 18}}>{t('content.price')} (VND/45m)</div>} 
                                     >
-                                    {t('content.update_profile')}
-                                    </Button>
-                                </Box>
+                                        <InputNumber 
+                                            style={{fontSize: 16}} 
+                                            placeholder={info.price} 
+                                            name="price"
+                                        />
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item 
+                                        style={{width: "70%"}}
+                                        key={info.level ? 'loaded': 'notLoaded'} 
+                                        initialValue={info.level} 
+                                        name="level" 
+                                        label={<div style={{fontSize: 18}}>{t('content.level')}</div>} 
+                                    >
+                                    <Select
+                                        suffixIcon={<CaretDownOutlined className='text-black' />}
+                                        options={
+                                            [...Array(7)]
+                                            .map((value, idex) => (
+                                                { 
+                                                    value: idex + 1, 
+                                                    label: `${idex + 1}` 
+                                                }
+                                            ))
+                                        }
+                                    />
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item 
+                                        key={info.teach_methods ? 'loaded': 'notLoaded'} 
+                                        initialValue={info.teach_methods} 
+                                        name='teach_methods' 
+                                        label={<div style={{fontSize: 18}}>{t('content.teach_method')}</div>} 
+                                    >
+                                        <Checkbox.Group 
+                                            style={{ width: '100%', fontSize: 18}} 
+                                            name='teach_methods'
+                                            options={[
+                                                {
+                                                    label: <div style={{fontSize: 16}}>{t('content.online')}</div>,
+                                                    value: "online"
+                                                },
+                                                {
+                                                    label: <div style={{fontSize: 16}}>{t('content.offline1')}</div>,
+                                                    value: "offline1"
+                                                },
+                                                {
+                                                    label: <div style={{fontSize: 16}}>{t('content.offline2')}</div>,
+                                                    value: "offline2"
+                                                }
+                                            ]}
+                                            onChange={(e) => {
+                                                
+                                            }}
+                                        >
+                                        </Checkbox.Group>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="info_link" label={<div style={{fontSize: 18}}>{t('content.info_link')}</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.info_link} name="info_link"/>
+                                    </Form.Item>
+                                </Typography>
+                                </Stack>
+                                <Stack direction="column">
+                                <Typography>
+                                    <Form.Item name="certificate1" label={<div style={{fontSize: 18}}>{t('content.certificate')} 1</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.certificate1} name="certificate1"/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="certificate2" label={<div style={{fontSize: 18}}>{t('content.certificate')} 2</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.certificate2} name="certificate2"/>
+                                    </Form.Item>
+                                </Typography>
+                                <Typography>
+                                    <Form.Item name="certificate3" label={<div style={{fontSize: 18}}>{t('content.certificate')} 3</div>} >
+                                        <Input style={{fontSize: 16}} placeholder={info.certificate3} name="certificate3"/>
+                                    </Form.Item>
+                                </Typography>
+                                </Stack>
                             </Stack>
+            
+                            <Form.Item label={<div style={{fontSize: 18}}>{t('content.schedule')}</div>}>
+                                <TimeTables2 {...table_props}/>
+                            </Form.Item>
+
+                            <Form.Item name="detail" label={<div style={{fontSize: 18}}>{t('content.detail')}</div>} >
+                                <TextArea 
+                                    placeholder={info.detail} 
+                                    style={{fontSize: 18}}
+                                    autoSize={{ minRows: 4, maxRows: 5 }}
+                                />
+                            </Form.Item>
+
+                            <Box sx={{ display: "flex", justifyContent: "center"}}>
+                                <Button
+                                    size="large"
+                                    style={{
+                                        color: "#111111",
+                                        borderColor: "#3B5B95",
+                                        minWidth: "3%",
+                                        fontSize: 18,
+                                    }}
+                                    htmlType='submit'
+                                >
+                                {t('content.update_profile')}
+                                </Button>
+                            </Box>
                         </Stack>
-                    </Form>
-                </div>
+                    </Stack>
+                </Form>
             }
+            </div>
         </Layout>
     );
 };

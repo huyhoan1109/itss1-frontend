@@ -18,7 +18,7 @@ import Layout from '../../components/Layout'
 import { Button, Dropdown, Form, Input, MenuProps, Pagination, Select } from 'antd'
 
 import RenderAvatar from '../../components/RenderAvatar'
-import TimeTableProp from '../../types/TimeTableProp'
+import {TimeTableProp} from '../../types/TimeTableProp'
 import TimeTables from '../../components/TimeTable/TimeTables'
 import MapProp from '../../components/Map/MapProp'
 import Map from '../../components/Map/Map'
@@ -61,14 +61,14 @@ const SearchTeachersPage = () => {
         lng: teacher_lng
     }
 
-    // useEffect(() => {
-    //     if ("geolocation" in navigator) {
-    //         navigator.geolocation.getCurrentPosition((position) => {
-    //             setCLat(position.coords.latitude)
-    //             setCLng(position.coords.longitude);
-    //         });
-    //     }
-    // }, [c_lat, c_lng, teacher_lat, teacher_lng])
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setCLat(position.coords.latitude)
+                setCLng(position.coords.longitude);
+            });
+        }
+    }, [c_lat, c_lng, teacher_lat, teacher_lng])
 
     const calDistance = (from_lat:number, from_lng:number, to_lat:number, to_lng:number) => {
         let latlng1 = L.latLng(from_lat, from_lng);
@@ -155,26 +155,30 @@ const SearchTeachersPage = () => {
         let count_teacher = 0
         if (data?.data?.data) {
             let validTeachers:any = []
-            // data.data.data.map((value:any) => {
-            //     let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
-            //     value.schedulers.forEach((schedule:any) => {
-            //         let check_sch = true
-            //         if (times?.dayIDs?.length > 0) check_sch = (times.dayIDs.find((id:any) => id == schedule.weekdayID)) && (schedule.shiftID == chooseShift)
-            //         else check_sch = true
-            //         let check_dist = true
-            //         if (filterValue?.distance && filterValue.distance != '') check_dist = (filterValue?.distance >= dist)
-            //         else check_dist = true
-            //         if(check_sch && check_dist) {
-            //             if (!checkTeacher(validTeachers, value.teacherID)) {
-            //                 validTeachers.push(value)
-            //                 count_teacher += 1
-            //             }
-            //         }
-            //     })
+            data.data.data.map((value:any) => {
+                let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
+                value.schedulers.forEach((schedule:any) => {
+                    let check_sch = true
+                    if (times?.dayIDs?.length > 0) {
+                        let find = times.dayIDs.find((id:any) => id == schedule.weekdayID)
+                        if (find == 0) find = true 
+                        check_sch = find && (schedule.shiftID == chooseShift)
+                    } else {
+                        check_sch = true
+                    }
+                    let check_dist = true
+                    if (filterValue?.distance && filterValue.distance != '') check_dist = (filterValue?.distance >= dist)
+                    else check_dist = true
+                    if(check_sch && check_dist) {
+                        if (!checkTeacher(validTeachers, value.teacherID)) {
+                            validTeachers.push(value)
+                            count_teacher += 1
+                        }
+                    }
+                })
                 
-            // })
-            // setTeachers(validTeachers)
-            setTeachers(data.data.data)
+            })
+            setTeachers(validTeachers)
             setInfoPage(data.data.infoPage)
         }
     }, [data, times, table, filterValue])
@@ -289,21 +293,20 @@ const SearchTeachersPage = () => {
                 </div>
             </div>
                 <div>
-                {/* <div className='shadow-xl p-2 bg-white rounded-xl' style={{marginBottom: 10}}> 
+                <div className='shadow-xl p-2 bg-white rounded-xl' style={{marginBottom: 10}}> 
                     <TimeTables {...table_props} />
-                </div> */}
+                </div>
                 <div className='shadow-xl p-4 bg-white rounded-xl'>      
                     <Form autoComplete='off' form={form} onFinish={handleFinishForm} className='mb-1'>
                         <div style={{marginBottom: 20}}></div>
-                        {/* <Form.Item
+                        <Form.Item
                             label={<div className='text-base'>{t('content.distance') + " (km)"}</div>}
                             labelAlign='left'
                             name='distance'
                             rules={[{ required: false, message: 'Please input!' }]}
                         >
                             <Input />
-                        </Form.Item> */}
-
+                        </Form.Item>
                         <Form.Item
                             label={<div className='text-base'>{t('content.level')}</div>}
                             labelAlign='left'
@@ -418,9 +421,9 @@ const SearchTeachersPage = () => {
                         </Form.Item>
                     </Form>
                 </div>
-                {/* <div className="p-4" style={{marginTop: 20}}>
+                <div className="p-4" style={{marginTop: 20}}>
                     <Map {...map_props}/>
-                </div> */}
+                </div>
             </div>
         </div>
     </div>
