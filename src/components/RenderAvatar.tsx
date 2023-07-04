@@ -1,12 +1,32 @@
 import user_image from '../assets/images/user.png'
-import { FC } from 'react';
-const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
+import { FC, useEffect, useState } from 'react';
+interface AvatarProps {
+    avatar?: string;
+    size?: string;
+}
+const RenderAvatar :FC<AvatarProps> = ({avatar, size="large"}) => {
+    const [w_h, setWH] = useState('w-36 h-36')
+    useEffect(() => {
+        switch (size) {
+            case 'large':
+                setWH('w-36 h-36')
+                break
+            case 'middle':
+                setWH('w-18 h-18')
+                break
+            case 'small':
+                setWH('w-12 h-12')
+                break
+                
+        }
+    }, [size])
     return (
         <div className='flex justify-center items-start'>
         {avatar != null &&
             <img 
-                src={avatar}
-                className='w-36 h-36 object-cover rounded-full border border-solid border-gray-500'
+                style={{resize: 'inherit'}}
+                src={avatar }
+                className={`${w_h} object-cover rounded-full border border-solid border-gray-500`}
                 alt=''
                 onError={({ currentTarget }) => {
                     currentTarget.onerror = null; // prevents looping
@@ -14,10 +34,11 @@ const RenderAvatar :FC<{avatar: string}> = ({avatar}) => {
                 }}
             />
         } 
-        {avatar == null &&
+        {avatar  == null &&
             <img 
+                style={{resize: 'inherit'}}
                 src={user_image}
-                className='w-36 h-36 object-cover rounded-full border border-solid border-gray-500'
+                className={`${w_h} object-cover rounded-full border border-solid border-gray-500`}
                 alt=''
             />
         }  

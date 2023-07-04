@@ -1,43 +1,42 @@
 import Layout from "../../components/Layout"
-import { useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { routePath } from "../../routes/routePath"
-import { notification } from "antd"
+import { Typography, notification } from "antd"
 import { Api } from "../../services/api"
 import { useTranslation } from "react-i18next"
-import {Form, Input, Radio, Button, Select} from "antd"
-import {CaretDownOutlined} from "@ant-design/icons"
+import {Form, Input, Radio, Button, Select, Upload} from "antd"
+import {CaretDownOutlined, UploadOutlined} from "@ant-design/icons"
 import axios from "axios"
 
 const SignUpPage = () => {
     const {t, i18n} = useTranslation()
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('Ha Noi')
-    const [c_password, setC_Password] = useState('')
     const [role, setRole] = useState('student')
     const [lat, setLat] = useState(0)
     const [lng, setLng] = useState(0)
+    const [password, setPassword] = useState('')
+    const [c_password, setC_Password] = useState('')
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [c_passwordVisible, setCPasswordVisible] = useState(false);
-
+    const [avatar, setAvatar] = useState<any>(null)
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => {    
-                // axios.request({
-                //     method: 'GET',
-                //     url:'https://eu1.locationiq.com/v1/reverse',
-                //     params: {
-                //         key: "pk.91694f91dfa8e396963df2b58cbce170",
-                //         lat: position.coords.latitude,
-                //         lon: position.coords.longitude,
-                //         format: 'json'
-                //     }
-                // }).then((res) => {
-                //     setAddress(res.data.display_name)
-                // }) 
-
+                axios.request({
+                    method: 'GET',
+                    url:'https://eu1.locationiq.com/v1/reverse',
+                    params: {
+                        key: "pk.91694f91dfa8e396963df2b58cbce170",
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                        format: 'json'
+                    }
+                }).then((res) => {
+                    setAddress(res.data.display_name)
+                }) 
                 setLat(position.coords.latitude)
                 setLng(position.coords.longitude);
             },
@@ -47,7 +46,7 @@ const SignUpPage = () => {
     }, [])
 
     
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if(email != '' && name != '' && phone != '') {
             if (password.localeCompare(c_password) == 0 && password != ''){
                 Api.request({
@@ -60,7 +59,9 @@ const SignUpPage = () => {
                         password,
                         role,
                         lat,
-                        lng
+                        lng,
+                        avatar,
+                        address
                     }
                 }).then(() => {
                     notification.success({
@@ -72,6 +73,7 @@ const SignUpPage = () => {
                     setPhone('')
                     setAddress('')
                     setC_Password('')
+                    setAvatar(null)
                     setRole('student')
                 }).catch(() => {
                     notification.error({
@@ -93,11 +95,33 @@ const SignUpPage = () => {
         }
     }
 
+    const handleUpload = async (options: any) => {
+        const {file} = options;
+        const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDY_NAME}/image/upload`;
+        var data = new FormData();
+        data.append('upload_preset', import.meta.env.VITE_CLOUDY_PRESET);
+        data.append('file', file);
+        axios(url,{
+            method: "POST",
+            headers: { 
+                "content-type": "multipart/form-data",
+            },
+            data: data
+        })
+        .then((res) => {
+            console.log(res.data.url)
+            setAvatar(res.data.url)
+        }).catch((err) => {
+            console.log(err)
+            setAvatar(null)
+        });
+    }
+
     return (
         <Layout>
             <div className="w-2/5 mx-auto" style={{marginTop: "5%"}}>
                 <div style={{ padding: 20, border: '3px solid', borderRadius: 40 }}>
-                    <Form onFinish={handleSubmit}>
+                    <Form>
                         <div style={{width: "75%", marginLeft: "auto", marginRight: "auto"}}>
                             <div style={{textAlign: "center"}}>
                                 {i18n.language == 'vi' && <h1 style={{fontSize: 30, marginBottom: "5%" }}>Tạo tài khoản mới</h1>}
@@ -126,8 +150,7 @@ const SignUpPage = () => {
                             </Form.Item>
                             </div>
                             <div className="flex justify-between">
-
-                            <Form.Item>
+                                <Form.Item>
                                     <Input
                                         style={{borderColor: "blue"}}
                                         size="large"
@@ -238,29 +261,30 @@ const SignUpPage = () => {
                                 </Form.Item>
                             </div>
                             <div className="flex justify-between">
-                                <div style={{width: "45%"}}>
-                                    <Form.Item>
-                                        <Select
-                                            size="large"
-                                            defaultValue={t('content.male')}
-                                            suffixIcon={<CaretDownOutlined className='text-black' />}
-                                            options={[
-                                                { 
-                                                    value: 'female', 
-                                                    label: t('content.female') 
-                                                },
-                                                { 
-                                                    value: 'male', 
-                                                    label: t('content.male') 
-                                                },
-                                                { 
-                                                    value: 'none', 
-                                                    label: t('content.null') 
-                                                },
-                                            ]}
-                                        />
-                                    </Form.Item>
-                                </div>
+                                <Form.Item>
+                                    <Upload
+                                        multiple={false}
+                                        maxCount={1}
+                                        beforeUpload={() => false}
+                                        name="file"
+                                        onChange={handleUpload}
+                                        progress={{
+                                            strokeColor: {
+                                            '0%': '#108ee9',
+                                            '100%': '#87d068',
+                                            },
+                                            strokeWidth: 3,
+                                            format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+                                        }}
+                                    >
+                                        {i18n.language == 'jp' &&
+                                            <Button size="large" icon={<UploadOutlined />}>イメージアップロード</Button>
+                                        }
+                                        { i18n.language == 'vi' &&
+                                            <Button size="large" icon={<UploadOutlined />}>Tải ảnh lên</Button>
+                                        }
+                                    </Upload>
+                                </Form.Item>
                                 <Form.Item>
                                     <Input 
                                         style={{borderColor: "blue"}}
@@ -283,34 +307,58 @@ const SignUpPage = () => {
                                 />
                             </Form.Item>
                             <Form.Item>
-                                <div style={{float: "right"}}>
-                                    <Radio.Group 
-                                        onChange={(e) => {setRole(e.target.value)}} 
-                                        value={role}
-                                    >
-                                        <Radio value="student"><div style={{fontSize: 18}}>{t('content.student')}</div></Radio>
-                                        <Radio value="teacher"><div style={{fontSize: 18}}>{t('content.tutor')}</div></Radio>
-                                    </Radio.Group>
+                                <div className="flex float-right gap-4">
+                                    <Typography>
+                                        <Select
+                                            size="large"
+                                            defaultValue={t('content.male')}
+                                            suffixIcon={<CaretDownOutlined className='text-black'/>}
+                                            options={[
+                                                { 
+                                                    value: 'female', 
+                                                    label: t('content.female') 
+                                                },
+                                                { 
+                                                    value: 'male', 
+                                                    label: t('content.male') 
+                                                },
+                                                { 
+                                                    value: 'none', 
+                                                    label: t('content.null') 
+                                                },
+                                            ]}
+                                    />
+                                    </Typography>
+                                    <Typography>
+                                        <Radio.Group 
+                                            onChange={(e) => {setRole(e.target.value)}} 
+                                            value={role}
+                                            size="large"
+                                        >
+                                            <Radio.Button value="student"><div style={{fontSize: 18}}>{t('content.student')}</div></Radio.Button>
+                                            <Radio.Button value="teacher"><div style={{fontSize: 18}}>{t('content.teacher')}</div></Radio.Button>
+                                        </Radio.Group>
+                                    </Typography>
                                 </div>
                             </Form.Item>
                             <div style={{width: "70%", marginLeft: "auto", marginRight: "auto"}}>
                                 <Form.Item>
-                                    <Button style={{borderColor: "blue"}} htmlType="submit" block>
+                                    <Button style={{borderColor: "blue"}} onClick={handleSubmit} block>
                                         <div style={{fontSize: 16}}>{t('content.signup')}</div>
                                     </Button>
                                 </Form.Item>
                             </div>
                         </div>
-                    <div style={{ textAlign: 'center' }}> 
-                        {
-                            i18n.language == 'vi' &&  
-                            <div style={{fontSize: 18}}>Đã có tài khoản?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
-                        }
-                        {
-                            i18n.language == 'jp' &&  
-                            <div style={{fontSize: 18}}>アカウントがある?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
-                        }
-                    </div>
+                        <div style={{ textAlign: 'center' }}> 
+                            {
+                                i18n.language == 'vi' &&  
+                                <div style={{fontSize: 18}}>Đã có tài khoản?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
+                            }
+                            {
+                                i18n.language == 'jp' &&  
+                                <div style={{fontSize: 18}}>アカウントがある?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
+                            }
+                        </div>                  
                     </Form>
                 </div>
             </div>

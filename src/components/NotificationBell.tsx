@@ -28,7 +28,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                             <a>{t('content.student')}{item.name}が登録しました</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.tutor')}{item.name}が{t(`content.${item.status}`)}しました</a>
+                            <a>{t('content.teacher')}{item.name}が{t(`content.${item.status}`)}しました</a>
                         ))
                     }
                     {i18n.language == 'vi' && 
@@ -36,7 +36,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                             <a>{t('content.student')} {item.name} vừa đăng ký</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.tutor')} {item.name} đã {t(`content.${item.status}`)}</a>
+                            <a>{t('content.teacher')} {item.name} đã {t(`content.${item.status}`)}</a>
                         ))
                     }
                 </MenuItem>

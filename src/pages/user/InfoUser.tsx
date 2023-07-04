@@ -7,7 +7,7 @@ import useAuth from '../../hooks/useAuth';
 import Container from '../../components/Container';
 import { useTranslation } from 'react-i18next';
 import RenderAvatar from '../../components/RenderAvatar';
-import { Button, Form, Input, Select, Checkbox, InputNumber, notification } from 'antd';
+import { Button, Form, Input, Select, Checkbox, InputNumber, notification, Upload } from 'antd';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { BsPencil } from 'react-icons/bs';
 import { EnvironmentOutlined, PhoneFilled, MailOutlined, CaretDownOutlined } from '@ant-design/icons'
@@ -16,6 +16,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import {TimeTableProp2, DAYS_JP, Shifts } from "../../types/TimeTableProp";
 import TimeTables2 from '../../components/TimeTable2/TimeTables2';
 import { PersonOutlined } from '@mui/icons-material';
+import axios from 'axios';
 
 const InfoUserPage = () => {
 
@@ -25,6 +26,8 @@ const InfoUserPage = () => {
     const [showWeekend, setShowWeekend] = useState(false);
     const [times, setTimes] = useState<any>([])
     const [schedulers, setSchedulers] = useState<any>([])
+    const [openModal, setOpenModal] = useState(false)
+
     let table_props: TimeTableProp2 = {
         chooseShift, 
         setChooseShift, 
@@ -59,7 +62,46 @@ const InfoUserPage = () => {
 
     if (error) {
         setAuth({})
-        return navigate(routePath.auth.login)
+        setTimeout(() => {
+            navigate(routePath.auth.login)
+        }, 500)
+        return <></>
+    }
+
+    const handleUpload = async (options: any) => {
+        const {file} = options;
+        const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDY_NAME}/image/upload`;
+        var data = new FormData();
+        data.append('upload_preset', import.meta.env.VITE_CLOUDY_PRESET);
+        data.append('file', file);
+        axios(url,{
+            method: "POST",
+            headers: { 
+                "content-type": "multipart/form-data",
+            },
+            data: data
+        })
+        .then((res) => {
+            Api({
+                method: 'POST',
+                url: routePath.user.base,
+                headers: {
+                    Authorization: `Bearer ${auth.token}`
+                },
+                data:{
+                    avatar: res.data.url
+                }
+            }).then(() => {
+                refetch()
+                notification.success({
+                    message: t('message.updated_ok')
+                })
+            })
+        }).catch((err) => {
+            notification.error({
+                message: t('message.error')
+            })
+        });
     }
 
     useEffect(() => {
@@ -197,10 +239,19 @@ const InfoUserPage = () => {
             <Container className='py-10 flex items-end justify-center bg-blue-200'>
                 <div className='w-3/5 h-3/5 rounded-xl p-8 shadow-md bg-white flex items-start justify-between gap-6'>
                     <div className="relative">
-                        <RenderAvatar avatar={info.avatar} />
-                        <Button className="absolute bottom-0 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
-                            <BsPencil color='blue'/>
-                        </Button>
+                        <RenderAvatar avatar={info.avatar} size="large"/>
+                        <Upload
+                            multiple={false}
+                            maxCount={1}
+                            beforeUpload={() => false}
+                            name="file"
+                            onChange={handleUpload}
+                            showUploadList={false}
+                        >
+                            <Button className="absolute bottom-5 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
+                                <BsPencil color='blue'/>
+                            </Button>
+                        </Upload>
                     </div>
                     <div className='w-[85%]'>
                         <div className='flex flex-col gap-2'>
@@ -240,13 +291,14 @@ const InfoUserPage = () => {
                         </Button>
                         <Button 
                             size='large' className='w-fit bg-blue-600 text-white !px-10' 
-                            onClick={() => {}}
+                            onClick={() => {setOpenModal(true)}}
                         >
                             {t('content.fix')}
                         </Button>
                         </div>
                     </div>
                 </div>
+
             </Container>
             </div>
             }
@@ -260,10 +312,19 @@ const InfoUserPage = () => {
                     <Stack direction="row" flex={1}>
                         <Stack direction="column" style={{marginTop: "2%", marginLeft: "2%"}}>
                             <div className="relative">
-                                <RenderAvatar avatar={info.avatar}/>
-                                <Button className="absolute bottom-0 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
-                                    <BsPencil color='blue'/>
-                                </Button>                   
+                                <RenderAvatar avatar={info.avatar} size="large"/>
+                                <Upload
+                                    multiple={false}
+                                    maxCount={1}
+                                    beforeUpload={() => false}
+                                    name="file"
+                                    onChange={handleUpload}
+                                    showUploadList={false}
+                                >
+                                    <Button className="absolute bottom-5 border-sky-600 font-bold rounded" style={{fontSize: 18, marginLeft: 90}}>
+                                        <BsPencil color='blue'/>
+                                    </Button>
+                                </Upload>                   
                             </div>
                         </Stack>
                         <Stack direction="column" flex={1} margin={"2%"}>

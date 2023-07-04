@@ -227,12 +227,12 @@ const SearchTeachersPage = () => {
                                 className='border border-solid gap-5 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
                             >
                                 <Link key={index} to={routePath.teacher.view(value.id)}>
-                                    <RenderAvatar avatar={value.avatar} />
+                                    <RenderAvatar avatar={value.avatar} size='large'/>
                                 </Link>
                                 <div>
                                     <div className='flex justify-between items-center'>
                                         <div className='flex items-center justify-start text-xl gap-6'>
-                                            <div className='font-semibold text-yellow-700'>{t('content.tutor')}</div>
+                                            <div className='font-semibold text-yellow-700'>{t('content.teacher')}</div>
                                             <Link key={index} to={routePath.teacher.view(value.id)}>
                                                 <div className='font-semibold text-black'>{value.name}</div>
                                             </Link>

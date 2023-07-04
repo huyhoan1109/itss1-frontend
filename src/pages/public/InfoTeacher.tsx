@@ -92,7 +92,7 @@ const InfoTeacherPage = () => {
                     <div className='flex flex-col gap-2' style={{marginTop: 30}}>
                         <div className='flex items-center '>
                             <div className='flex items-center gap-x-20'>
-                                <h1 style={{fontSize: 30}} className='font-semibold text-yellow-700 text-2xl'>{t('content.tutor')}</h1>
+                                <h1 style={{fontSize: 30}} className='font-semibold text-yellow-700 text-2xl'>{t('content.teacher')}</h1>
                                 <h1 style={{fontSize: 30}} className='font-semibold text-black text-2xl'>{info.name}</h1>
                             </div>
                             <div style={{marginLeft: 400}}>

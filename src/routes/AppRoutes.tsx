@@ -11,7 +11,7 @@ import NotFoundPage from '../pages/public/404'
 import useAuth from '../hooks/useAuth'
 import StudentListPage from '../pages/teacher/StudentList'
 import InfoUserPage from '../pages/user/InfoUser'
-import DashboardPage from '../pages/admin/Dashboard'
+import AdminPage from '../pages/admin/Admin'
 
 import CommentProvider from '../contexts/CommentProvider'
 
@@ -53,7 +53,7 @@ const AppRoutes = () => {
                 path={routePath.admin.dashboard} 
                 element={
                     <AdminRoute>
-                        <DashboardPage />
+                        <AdminPage />
                     </AdminRoute>
                 }
             />

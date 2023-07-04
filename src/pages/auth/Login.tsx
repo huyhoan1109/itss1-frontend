@@ -35,8 +35,9 @@ const LoginPage = () => {
             notification.success({
                 message: t('message.welcome') + ' ' + user.name
             })
-            if (user.role == 'admin') navigate(routePath.admin.dashboard, {replace: true})
-            return navigate(routePath.allTeachers, {replace: true});
+            console.log(user.role)
+            if (user.role == 'admin') return navigate(routePath.admin.dashboard, {replace: true})
+            else return navigate(routePath.allTeachers, {replace: true});
         }).catch((err) => {
             notification.error({
                 message: t('message.error') 
@@ -59,8 +60,6 @@ const LoginPage = () => {
     }, [persist])
     return (
         <Layout>
-
-
             <div className="flex">
                 <div className="w-1/5 mx-auto" style={{marginTop: "5%"}}>
                 <div style={{ padding: 30, border: '3px solid', borderRadius: 20 }}>

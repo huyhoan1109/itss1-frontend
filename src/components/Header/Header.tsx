@@ -7,9 +7,6 @@ import useAuth from "../../hooks/useAuth";
 import { Dropdown, notification, MenuProps } from "antd";
 import user_image from '../../assets/images/user.png'
 import { useEffect, useState } from "react";
-import {AiOutlineBell} from "react-icons/ai"
-import useNotifications from "../../hooks/useNotifications";
-import { Api } from "../../services/api";
 import NotificationBell from "../NotificationBell";
 
 function LanguageSwitcher(){
