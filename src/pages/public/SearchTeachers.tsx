@@ -50,8 +50,8 @@ const SearchTeachersPage = () => {
     const [c_lat, setCLat] = useState(21.0695076) 
     const [c_lng, setCLng] = useState(105.8378366)
 
-    const [teacher_lat, setTeacherLat] = useState(21.0695076)
-    const [teacher_lng, setTeacherLng] = useState(105.8378366)
+    const [teacher_lat, setTeacherLat] = useState<any>(null)
+    const [teacher_lng, setTeacherLng] = useState<any>(null)
 
 
     let map_props: MapProp = {
@@ -125,7 +125,7 @@ const SearchTeachersPage = () => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['teacherList', name, currentPage, filterValue],
         queryFn: () =>
-            Api.request({
+            Api({
                 method: 'GET',
                 url: routePath.allTeachers,
                 params: {
@@ -243,19 +243,14 @@ const SearchTeachersPage = () => {
                                         </div>
                                     </div>
                                 <button className='astext'>
-                                    <div className='flex my-2 gap-2' onClick={() => {
+                                    <div className='my-2 flex gap-2' onClick={() => {
                                         setTeacherLat(value.lat)
                                         setTeacherLng(value.lng)
                                     }}>
                                         <EnvironmentOutlined className='text-purple-800 mt-1' />
-                                        <div className='text-sm text-purple-700'>{value.address} ({Math.ceil(calDistance(map_props.c_lat, map_props.c_lat, value.lat, value.lng))} km)</div>
+                                        <div className='text-sm text-purple-700'>{value.address} ({Math.ceil(calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng))} km)</div>
                                     </div>
                                 </button>
-                                <div className='flex gap-10 text-sm'>
-                                    <div>{t('content.age')} {value.age}</div>
-                                    <div>{t('content.experience')}  {value.experience}</div>
-                                    <div>{t('content.price')}   {value.price}VNĐ/45m</div>
-                                </div>
                                 <div className='my-2 flex gap-2'>
                                     <PhoneFilled className='cursor-pointer rotate-90' onClick={() => saveClipBoard(value.phone)}/>
                                     <button className='astext text-sm text-blue-700' onClick={() => saveClipBoard(value.phone)}>{value.phone}</button>
@@ -263,6 +258,20 @@ const SearchTeachersPage = () => {
                                 <div className='my-2 flex gap-2'>
                                     <MailOutlined className='cursor-pointer' onClick={() => saveClipBoard(value.email)}/>
                                     <button className='astext text-sm text-orange-700' onClick={() => saveClipBoard(value.email)}>{value.email}</button>
+                                </div>
+                                <div className='flex gap-10 text-sm'>
+                                    <div className='flex gap-2'>
+                                        <div style={{color: 'green'}}>{t('content.age')}</div>: 
+                                        <div>{value.age}</div>
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <div style={{color: 'blue'}}>{t('content.experience')}</div>: 
+                                        <div>{value.experience}</div>
+                                    </div>
+                                    <div className='flex gap-2'>
+                                        <div style={{color: 'orange'}}>{t('content.price')}</div>: 
+                                        <div>{value.price} VND/45m</div>
+                                    </div>
                                 </div>
                                 <span className='text-sm text-gray-700'>{value.detail.substring(0, 100)} {value.detail.length >= 100 && '...'}</span>
                             </div>

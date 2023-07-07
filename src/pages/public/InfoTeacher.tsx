@@ -10,10 +10,11 @@ import Comments from '../../components/Comments/Comments';
 import useComment from '../../hooks/useComment';
 import Container from '../../components/Container';
 import { Button } from 'antd';
-import { CheckOutlined, EnvironmentOutlined, PhoneFilled, MailOutlined } from '@ant-design/icons'
+import { CheckOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next';
 import RenderAvatar from '../../components/RenderAvatar';
 import useAuth from '../../hooks/useAuth';
+import { HomeOutlined, MailOutline, PhoneOutlined } from '@mui/icons-material';
 
 const InfoTeacherPage = () => {
     const {t} = useTranslation()
@@ -26,14 +27,14 @@ const InfoTeacherPage = () => {
     const { data } = useQuery({
         queryKey: ['teacherInfo', params.id],
         queryFn: () => 
-            Api.request({
+            Api({
                 method: 'GET',
                 url: routePath.teacher.view(params.id||"")
             })
     })
 
     useEffect(() => {
-        Api.request({
+        Api({
             method: "GET",
             url: routePath.user.infoMatch(params.id||""),
             headers: {
@@ -84,10 +85,9 @@ const InfoTeacherPage = () => {
         <Layout>
             <div className='h-700 w-full bg-blue-200'>
             <Container className='py-32 flex items-end justify-center bg-blue-200'>
-                <div className='w-[85%] h-300 rounded-xl p-4 shadow-md bg-white flex items-start gap-6'>
-                    <div style={{marginLeft: 30, marginTop: 30}}> 
+                <div className='w-[85%] h-300 rounded-3xl p-4 shadow-md bg-white flex items-start gap-6'>
+                    <div style={{width: 400, marginLeft: 30, marginTop: 30}}> 
                         <RenderAvatar avatar={info.avatar} />
-                        {/* <div style={{marginTop: 10}}>{info.info_link}</div> */}
                     </div>
                     <div className='flex flex-col gap-2' style={{marginTop: 30}}>
                         <div className='flex items-center '>
@@ -95,7 +95,7 @@ const InfoTeacherPage = () => {
                                 <h1 style={{fontSize: 30}} className='font-semibold text-yellow-700 text-2xl'>{t('content.teacher')}</h1>
                                 <h1 style={{fontSize: 30}} className='font-semibold text-black text-2xl'>{info.name}</h1>
                             </div>
-                            <div style={{marginLeft: 400}}>
+                            <div style={{marginLeft: 300}}>
                                 <div className="flex items-center mt-2 mb-4">
                                     {
                                         [1, 2, 3, 4, 5].map((star, index) => {
@@ -112,17 +112,17 @@ const InfoTeacherPage = () => {
                                 </div>
                             </div>
                         </div>
-                    <div className='flex gap-20'  style={{marginTop: 10}}>
+                    <div className='w-[75%]'>
                         <div style={{fontSize: 18}} className='flex gap-x-2'>
-                            <EnvironmentOutlined className='text-purple-800 mt-1' />
+                            <HomeOutlined className='text-purple-800 mt-1' />
                             <div className='font-semibold text-purple-700'>{info.address}</div>
                         </div>
                         <div style={{fontSize: 18}} className='flex gap-x-2'>
-                            <PhoneFilled className='cursor-pointer rotate-90' onClick={() => saveClipBoard(info.phone)}/>
+                            <PhoneOutlined className='cursor-pointer' onClick={() => saveClipBoard(info.phone)}/>
                             <button className='astext text-md text-blue-700' onClick={() => saveClipBoard(info.phone)}>{info.phone}</button>
                         </div>
                         <div style={{fontSize: 18}} className='flex gap-x-2'>
-                            <MailOutlined className='cursor-pointer' onClick={() => saveClipBoard(info.email)}/>
+                            <MailOutline className='cursor-pointer' onClick={() => saveClipBoard(info.email)}/>
                             <button className='astext text-md text-orange-700' onClick={() => saveClipBoard(info.email)}>{info.email}</button>
                         </div>
                     </div>
@@ -177,12 +177,11 @@ const InfoTeacherPage = () => {
                                 ) : null}
                         </ul>
                     </div>
-                    <div className='w-full'>
-                        <h1 style={{fontSize: 18}}>{t('content.detail')}:</h1>
+                    <div className='w-[75%]'>
                         <span style={{fontSize: 18}}>{info.detail}</span>
                     </div>
 
-                    <div className='flex items-center gap-60' style={{marginTop: 30, marginBottom: 30}}>
+                    <div className='w-[75%] flex items-center gap-36' style={{marginTop: 30, marginBottom: 30}}>
                         
                         <Button size='large' style={{fontSize: 18}} className='w-fit bg-blue-600 text-white !px-10' onClick={() => navigate(-1)}>
                         {t('content.go_back')}

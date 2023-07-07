@@ -13,13 +13,13 @@ import appLogout from "../../services/appLogout"
 const LoginPage = () => {
     const {t, i18n} = useTranslation()
     let navigate = useNavigate();
-    const {setAuth, persist, setPersist} = useAuth()
+    const {auth, setAuth, persist, setPersist} = useAuth()
     const [email, setEmail] = useLocalStorage("email", "")
     const [password, setPassword] = useLocalStorage("password", "")
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [form] = Form.useForm()
     const handleSubmit = () => {
-        Api.request({
+        Api({
             method: 'POST',
             url: routePath.auth.login,
             data:{
@@ -27,6 +27,7 @@ const LoginPage = () => {
                 password:password
             }
         }).then((res) => {
+            console.log(res)
             const user = res.data.data.user;
             const token = res.data.data.access_token;
             const timeout =  res.data.data.timeout;
@@ -35,7 +36,6 @@ const LoginPage = () => {
             notification.success({
                 message: t('message.welcome') + ' ' + user.name
             })
-            console.log(user.role)
             if (user.role == 'admin') return navigate(routePath.admin.dashboard, {replace: true})
             else return navigate(routePath.allTeachers, {replace: true});
         }).catch((err) => {
@@ -50,6 +50,12 @@ const LoginPage = () => {
         setPersist(!persist);
     }
     useEffect(() => {
+        if (auth?.user) {
+            if (auth.user.role === 'admin') return navigate(routePath.admin.dashboard, {replace: true})
+            else return navigate(routePath.allTeachers, {replace: true});
+        }
+    }, [])
+    useEffect(() => {
         localStorage.setItem("persist", JSON.stringify(persist));
         return () => {
             if (persist == false) {
@@ -61,9 +67,9 @@ const LoginPage = () => {
     return (
         <Layout>
             <div className="flex">
-                <div className="w-1/5 mx-auto" style={{marginTop: "5%"}}>
+                <div className=" mx-auto" style={{ width: 400, marginTop: "5%"}}>
                 <div style={{ padding: 30, border: '3px solid', borderRadius: 20 }}>
-                    <Form form={form} onFinish={handleSubmit} style={{marginLeft: "5%", marginRight:"5%"}}>
+                    <Form form={form} onFinish={handleSubmit} style={{marginLeft: "10", marginRight:"20"}}>
                         <h1 style={{fontSize: 30, marginBottom: "5%" }}>SaGaSuy</h1>
                         <Form.Item>
                             <Input 
@@ -86,7 +92,7 @@ const LoginPage = () => {
                             />
                         </Form.Item>
                         <Form.Item>
-                            <div style={{float: "right", width: "40%"}}>
+                            <div style={{float: "right", width: 120}}>
                             <Button style={{borderColor: "blue"}} size="middle" htmlType="submit" block>
                                 <div style={{fontSize: 16}}>{t('content.login')}</div>
                             </Button>
@@ -102,7 +108,7 @@ const LoginPage = () => {
                             </div>
                         </Form.Item>
                         <Form.Item>
-                        <div style={{float: "right", width: "80%"}}>
+                        <div style={{float: "right", width: 220}}>
                             <Button style={{textAlign: "center", fontSize: 16, borderColor: "blue"}} size="middle" htmlType="submit" block>
                                 {
                                     i18n.language == 'vi' && 

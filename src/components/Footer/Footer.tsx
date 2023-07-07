@@ -12,11 +12,11 @@ const Footer = () => {
           theme.palette.mode === "light"
             ? theme.palette.grey[100]
             : theme.palette.grey[600],
-        p: 2,
+        p: 4,
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={5}>
+        <Grid container spacing={6}>
           <Grid item xs={12} sm={4}>
             <Typography variant="h6" color="text.primary" gutterBottom>
               About Us

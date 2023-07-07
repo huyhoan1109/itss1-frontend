@@ -1,6 +1,6 @@
 import { DeleteOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { Modal, Pagination, Table, Input } from 'antd'
+import { Modal, Pagination, Table, Input, notification } from 'antd'
 import { AiFillEye, AiOutlineClose } from 'react-icons/ai'
 import { TbLock, TbLockOpen } from 'react-icons/tb'
 import { useEffect, useMemo, useState } from 'react'
@@ -45,26 +45,33 @@ const AdminPage = () => {
         )
     }
 
-    const { data } = useQuery({
-        queryKey: ['adminUser', name, currentPage, tab],
-        queryFn: () =>
+    const getByTab = (name:any, page:any, tab:any) => {
+        if (tab === 'student' || tab === 'teacher') {
             Api({
                 method: 'GET',
                 url: `admin/${tab}`,
                 params: {
                     name,
-                    page: currentPage,
+                    page,
                     limit: 5,
-                },
-            }),
-    })
+                }
+            }).then(res => {
+                setInfos(res.data.data)
+                setInfoPage(res.data.infoPage)
+            })
+        } else {
+            Api({
+                method: 'GET',
+                url: `admin/${tab}`
+            }).then(res => {
+                setInfos(res.data.data)
+            })
+        }
+    }
 
     useEffect(() => {
-        if (data) {
-            setInfos(data.data.data)
-            if (tab == 'teacher' || tab == 'student') setInfoPage(data.data.infoPage)
-        }
-    }, [data])
+        getByTab(name, currentPage, tab)
+    }, [name, currentPage, tab])
 
     return (
         <div className='w-full border border-solid border-gray-800 flex flex-col'>
@@ -87,11 +94,11 @@ const AdminPage = () => {
                     }
                 }
                 >ログアウト</a>
-                <RenderAvatar avatar={auth.user.avatar} size='small' />
+                <RenderAvatar avatar={auth?.user?.avatar} size='small' />
             </div>
         </div>
-        <div className='flex-1 grid grid-cols-[1fr_5fr]'>
-            <div style={{overflow: "hidden", height: 850}} className='border-r border-solid border-gray-800 bg-gray-300 py-10 px-4'>
+        <div className='flex-1 grid-cols-[1fr_5fr] grid'>
+            <div style={{overflow: "hidden", height: 1000}} className='border-r border-solid border-gray-800 bg-gray-300 py-10 px-4'>
                 <TabComponent tab={'teacher'} title={'教師管理'} />
                 <TabComponent tab={'student'} title={'学生管理'} />
                 <TabComponent tab={'matching'} title={'統計'} />
@@ -132,7 +139,18 @@ const AdminPage = () => {
                             </td>
                             <td style={{border: "1px solid black", borderCollapse: "collapse"}}>
                             <div style={{fontSize: 25}} className='flex gap-2 justify-center items-center'>
-                                <DeleteOutlined />
+                                <DeleteOutlined 
+                                    onClick={() => {
+                                        Api.delete(
+                                        `${routePath.admin.base}/user/${value.id}`
+                                        ).then(() => {getByTab(name, currentPage, tab)}
+                                        ).catch(() => {
+                                            notification.error({
+                                                message: t('message.error')
+                                            })
+                                        })
+                                    }}
+                                />
                                 <AiFillEye 
                                     onClick={() => {
                                         setUser(value)
@@ -140,16 +158,35 @@ const AdminPage = () => {
                                     }}
                                 />
                                 {value.isBlock == 0 && 
-                                    <TbLock 
+                                    <TbLockOpen 
                                         onClick={() => {
-
+                                            Api.post(
+                                            `${routePath.admin.base}/user/${value.id}`,{
+                                                isBlock: 1
+                                            }
+                                            ).then(() => {getByTab(name, currentPage, tab)}
+                                            ).catch(() => {
+                                                notification.error({
+                                                    message: t('message.error')
+                                                })
+                                            })
                                         }}
                                     />
                                 }
                                 {value.isBlock != 0 && 
-                                    <TbLockOpen 
+                                    <TbLock 
                                         onClick={() => {
-
+                                            console.log(value.id)
+                                            Api.post(
+                                            `${routePath.admin.base}/user/${value.id}`,{
+                                                isBlock: 0
+                                            }
+                                            ).then(() => {getByTab(name, currentPage, tab)}
+                                            ).catch(() => {
+                                                notification.error({
+                                                    message: t('message.error')
+                                                })
+                                            })
                                         }}
                                     />
                                 }

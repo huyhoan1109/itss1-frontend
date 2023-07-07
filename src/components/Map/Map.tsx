@@ -23,14 +23,18 @@ export default function Map(props: MapProp) {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={[props.lat, props.lng]}></Marker>
             <Marker position={[props.c_lat, props.c_lng]}></Marker>
+            { props.lat && props.lng &&
+            <Marker position={[props.lat, props.lng]}></Marker>
+            }
             <Circle 
                 center={[props.c_lat, props.c_lng]}
                 fillColor="blue" 
                 radius={200}
             />
+            { props.lat && props.lng && 
             <Polyline positions={[[props.c_lat, props.c_lng], [props.lat, props.lng]]} color={'red'} />
+            }
             <RecenterAutomatically {...props}/>
         </MapContainer>
     )

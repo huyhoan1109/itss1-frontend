@@ -4,7 +4,7 @@ import { Api } from "../../services/api"
 import { routePath } from "../../routes/routePath"
 import { useParams, useNavigate } from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
-import { Select, Input, notification } from "antd"
+import { Select, Input, notification, Pagination } from "antd"
 import {FaRegPaperPlane} from "react-icons/fa"
 import { AiFillDelete, AiOutlineRedo } from "react-icons/ai"
 import './Comments.css'
@@ -23,6 +23,7 @@ const Comments = () => {
     const [comments, setComments] = useState<any>([])
     const [currentPage, setCurrentPage] = useState<number>(1)
     const {auth, setAuth} = useAuth()
+    const [infoPage, setInfoPage] = useState<any>({})
     const popRef:RefObject<any> = useRef()
     const {isPopUp, setIsPopUp} = useComment()
 
@@ -46,7 +47,7 @@ const Comments = () => {
         staleTime: 1500,
         cacheTime: 1500,
         queryFn: () =>
-            Api.request({
+            Api({
                 method: 'GET',
                 url: routePath.comment.teacher(params.id||""),
                 params: {
@@ -151,6 +152,7 @@ const Comments = () => {
     useEffect(() => {
         if (data?.data?.data) {
             setComments(data.data.data)
+            setInfoPage(data.data.infoPage)
         }
     },[data])
 
@@ -210,6 +212,19 @@ const Comments = () => {
                                 </div>
                             )
                         })
+                    }
+                    {comments.length > 0 &&
+                        <div className="row-container">
+                            <div className="row-center">
+                            <Pagination 
+                                current={currentPage}
+                                pageSize={3}
+                                onChange={(page, pageSize) => setCurrentPage(page)}
+                                total={+infoPage?.totalPages * 3}
+                                className='mx-auto'
+                            />
+                            </div>
+                        </div>
                     }
                 </div>
                 {   

@@ -32,7 +32,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                         ))
                     }
                     {i18n.language == 'vi' && 
-                        ((auth.user.role == 'teacher' && (item.status.localeCompare("wait") == 0) &&
+                        ((auth.user.role == 'teacher' &&
                             <a>{t('content.student')} {item.name} vừa đăng ký</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&

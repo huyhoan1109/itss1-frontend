@@ -7,16 +7,17 @@ import useAuth from '../../hooks/useAuth';
 import Container from '../../components/Container';
 import { useTranslation } from 'react-i18next';
 import RenderAvatar from '../../components/RenderAvatar';
-import { Button, Form, Input, Select, Checkbox, InputNumber, notification, Upload } from 'antd';
+import { Button, Form, Input, Select, Checkbox, InputNumber, notification, Upload, Modal, Row, Col } from 'antd';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { BsPencil } from 'react-icons/bs';
-import { EnvironmentOutlined, PhoneFilled, MailOutlined, CaretDownOutlined } from '@ant-design/icons'
+import { CaretDownOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom';
 import { Box, Stack, Typography } from "@mui/material";
 import {TimeTableProp2, DAYS_JP, Shifts } from "../../types/TimeTableProp";
 import TimeTables2 from '../../components/TimeTable2/TimeTables2';
-import { PersonOutlined } from '@mui/icons-material';
+import { HomeOutlined, MailOutline, PasswordOutlined, PersonOutline, PhoneOutlined } from '@mui/icons-material';
 import axios from 'axios';
+
 
 const InfoUserPage = () => {
 
@@ -48,8 +49,16 @@ const InfoUserPage = () => {
     const [info, setInfo] = useState<any>({})
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [form] = Form.useForm()
+    const [lat, setLat] = useState<any>(null)
+    const [lng, setLng] = useState<any>(null)
+    const handleCloseModal = () => {
+        setOpenModal(false)
+    }
+    const handleOpenModal = () => {
+        setOpenModal(true)
+    }
     const { refetch, error, data } = useQuery({
-        queryKey: [`userInfo${auth.token}`, info],
+        queryKey: [`userInfo${auth.token}`],
         queryFn: () => 
             Api({
                 method: 'GET',
@@ -124,15 +133,43 @@ const InfoUserPage = () => {
                     setSchedulers(data.data.schedulers)
                 } 
                 setInfo({...rest, teach_methods})
+                setLat(rest.lat)
+                setLng(rest.lng)
             } else {
                 setInfo(result)
             }
         }
     }, [data])
 
+    const newLocation = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                let {address, ...rest} = info
+                console.log(address)
+                let newLat = position.coords.latitude
+                let newLng = position.coords.longitude
+                axios.request({
+                    method: 'GET',
+                    url:'https://eu1.locationiq.com/v1/reverse',
+                    params: {
+                        key: "pk.91694f91dfa8e396963df2b58cbce170",
+                        lat: newLat,
+                        lon: newLng,
+                        format: 'json'
+                    }
+                }).then((res) => {
+                    setLat(newLat)
+                    setLng(newLng);
+                    setInfo({address: res.data.display_name, ...rest})
+                }) 
+            });
+        }
+    }
+
     const handleSubmit = async () => {
         let formValue = form.getFieldsValue()
         let name = formValue.name || info.name
+        let email = formValue.email || info.email
         let phone = formValue.phone || info.phone
         let password = formValue.password || info.password
         let address = formValue.address || info.address
@@ -147,12 +184,16 @@ const InfoUserPage = () => {
                 data:{
                     name,
                     phone,
+                    email,
                     password,
                     address,
-                    gender
+                    gender,
+                    lat: lat || info.lat,
+                    lng: lng || info.lng 
                 }
             }).then(() => {
                 if (auth.user.role == 'student') {
+                    refetch()
                     notification.success({
                         message: t('message.updated_ok')
                     })
@@ -194,9 +235,12 @@ const InfoUserPage = () => {
                     user_info: {
                         name,
                         phone,
+                        email,
                         password,
                         address,
-                        gender
+                        gender,
+                        lat: lat || info.lat,
+                        lng: lng || info.lng 
                     },
                     teacher_info: {
                         age,
@@ -235,10 +279,10 @@ const InfoUserPage = () => {
         <Layout>
             <div className='flex items-center justify-center'>
             {auth.user.role == 'student' && 
-            <div className='h-180 w-full bg-blue-200'>
-            <Container className='py-10 flex items-end justify-center bg-blue-200'>
-                <div className='w-3/5 h-3/5 rounded-xl p-8 shadow-md bg-white flex items-start justify-between gap-6'>
-                    <div className="relative">
+            <div className='w-[100%] bg-blue-200'>
+            <Container className='w-[100%] py-28 flex items-end justify-center bg-blue-200'>
+                <div style={{width: 1000, height: 600, borderRadius: 60 }} className='p-8 shadow-md bg-white flex items-start justify-between gap-6'>
+                    <div className="relative" style={{marginTop: 40, marginLeft: 40}}>
                         <RenderAvatar avatar={info.avatar} size="large"/>
                         <Upload
                             multiple={false}
@@ -255,47 +299,107 @@ const InfoUserPage = () => {
                     </div>
                     <div className='w-[85%]'>
                         <div className='flex flex-col gap-2'>
-                            <div className="flex gap-x-14" style={{marginTop: "4%", marginLeft: "3%"}}>
-                                <h1 className='font-semibold text-orange-700 text-2xl'>
-                                    {t('content.student')}
-                                </h1>
-                                <h1 className='font-semibold text-black-700 text-2xl'>{info.name}</h1>
+                            <div className="flex gap-x-20" style={{marginTop: "4%", marginLeft: "3%"}}>
+                                <h1 className='font-semibold text-black-700 text-3xl'>{info.name}</h1>
                             </div>
-                            <div className='flex gap-x-6' style={{marginTop: "2%", marginLeft: "3%"}}>
-                                <div className='flex gap-x-1'>
-                                    <EnvironmentOutlined className='text-purple-800 mt-1' />
-                                    <div className='font-semibold text-purple-700'>{info.address}</div>
+                            <div className='grid gap-4 grid-cols-1' style={{borderSpacing: 10, marginTop: "4%", marginLeft: "3%"}}>
+                                <div className='flex gap-x-4'>
+                                    <HomeOutlined />
+                                    <div className='astext text-md'>{info.address}</div>
                                 </div>
-                                <div className='flex gap-x-1'>
-                                    <PhoneFilled className='cursor-pointer rotate-90'/>
-                                    <button className='astext text-md text-blue-700'>{info.phone}</button>
+                                <div className='flex gap-x-4'>
+                                    <PhoneOutlined className='cursor-pointer'/>
+                                    <button className='astext text-md'>{info.phone}</button>
                                 </div>
-                                <div className='flex gap-x-1'>
-                                    <MailOutlined className='cursor-pointer'/>
-                                    <button className='astext text-md text-orange-700'>{info.email}</button>
+                                <div className='flex gap-x-4'>
+                                    <MailOutline/>
+                                    <button className='astext text-md'>{info.email}</button>
                                 </div>
-                            </div>
-                            <div className='flex gap-x-6'>
-                                <div className='flex gap-x-1' style={{marginTop: "2%", marginLeft: "3%"}}>
-                                    <PersonOutlined className='cursor-pointer'/>
-                                    <button className='astext text-md text-green-700'>{t(`content.${info.gender}`)}</button>
+                                <div className='flex gap-x-4'>
+                                    <PersonOutline/>
+                                    <button className='astext text-md'>{t(`content.${info.gender}`)}</button>
+                                </div>
+                                <div className='flex gap-x-4'>
+                                    <PasswordOutlined />
+                                    <div> ************** </div>
                                 </div>
                             </div>
                         </div>
-                        <div className='flex gap-20' style={{marginTop: 30, marginLeft: 30}}>
-                        <Button 
-                            size='large' className='w-fit bg-blue-600 text-white !px-10' 
-                            onClick={() => navigate(-1)}
-                        >
-                            {t('content.go_back')}
-                        </Button>
-                        <Button 
-                            size='large' className='w-fit bg-blue-600 text-white !px-10' 
-                            onClick={() => {setOpenModal(true)}}
-                        >
-                            {t('content.fix')}
-                        </Button>
+                        <div className='flex justify-center grid gap-x-8 grid-cols-2' style={{marginTop: "10%", marginLeft: "3%"}}>
+                            <Button 
+                                size='large' className='w-fit bg-blue-600 text-white !px-10' 
+                                onClick={() => navigate(-1)}
+                            >
+                                {t('content.go_back')}
+                            </Button>
+                            <Button 
+                                size='large' className='w-fit bg-blue-600 text-white !px-10' 
+                                onClick={() => {setOpenModal(true)}}
+                            >
+                                {t('content.fix')}
+                            </Button>
                         </div>
+                        <Modal
+                            open={openModal}
+                            onOk={() => setOpenModal(false)}
+                            onCancel={() => setOpenModal(false)}
+                            footer={null}
+                            width={800}
+                        >
+                            <Form 
+                                form={form} 
+                                onFinish={() => {
+                                    handleSubmit()
+                                    setOpenModal(false)
+                                }} 
+                                layout='vertical'
+                            >
+                                <Row className='flex gap-8 justify-center items-center' style={{marginTop: 20}}>
+                                    <Col span={10}>
+                                        <Form.Item name="name" label={<div style={{fontSize: 18}}>{t('content.name')}</div>} >
+                                            <Input style={{fontSize: 16}} placeholder={info.name} name="name" />
+                                        </Form.Item>
+                                        <Form.Item name="gender" label={<div style={{fontSize: 18}}>{t('content.gender')}</div>} >
+                                            <Select
+                                                style={{fontSize: 16}}
+                                                defaultValue='male'
+                                            >
+                                                <option style={{fontSize: 16, position: "inherit"}} value={'male'}>{t('content.male')}</option>
+                                                <option style={{fontSize: 16, position: "inherit"}} value={'female'}>{t('content.female')}</option>
+                                                <option style={{fontSize: 16, position: "inherit"}} value={'none'}>{t('content.null')}</option>
+                                            </Select>
+                                        </Form.Item>
+                                        <Form.Item name="email" label={<div style={{fontSize: 18}}>{t('content.email')}</div>} >
+                                            <Input style={{fontSize: 16}} placeholder={info.email} name="email" disabled/>
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={10}>
+                                        <Form.Item name="phone" label={<div style={{fontSize: 18}}>{t('content.phone')}</div>} >
+                                            <Input style={{fontSize: 16}} placeholder={info.phone} name="phone"/>
+                                        </Form.Item>
+                                        <Form.Item name="address" label={<div style={{fontSize: 18}}>{t('content.address')}</div>} >
+                                            <Input onClick={newLocation} style={{fontSize: 16}} placeholder={info.address} name="address"/>
+                                        </Form.Item>
+                                        <Form.Item name="password" label={<div style={{fontSize: 18}}>{t('content.password')}</div>} >
+                                            <Input.Password 
+                                                style={{fontSize: 16}} 
+                                                type="password" 
+                                                name="password"
+                                                visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Box sx={{ display: "flex", justifyContent: "center"}}>
+                                    <Button
+                                        size="large"
+                                        htmlType='submit'
+                                    >
+                                    {t('content.update_profile')}
+                                    </Button>
+                                </Box>
+                            </Form>
+                        </Modal>
                     </div>
                 </div>
 
@@ -337,7 +441,7 @@ const InfoUserPage = () => {
                                 </Typography>
                                 <Typography>
                                     <Form.Item name="email" label={<div style={{fontSize: 18}}>{t('content.email')}</div>} >
-                                        <Input style={{fontSize: 16}} placeholder={info.email} name="email" disabled/>
+                                        <Input style={{fontSize: 16}} placeholder={info.email} name="email"/>
                                     </Form.Item>
                                 </Typography>
                                 <Typography>
@@ -357,7 +461,7 @@ const InfoUserPage = () => {
                                 </Typography>
                                 <Typography>
                                     <Form.Item name="address" label={<div style={{fontSize: 18}}>{t('content.address')}</div>} >
-                                        <Input style={{fontSize: 16}} placeholder={info.address} name="address"/>
+                                        <Input onClick={newLocation} style={{fontSize: 16}} placeholder={info.address} name="address"/>
                                     </Form.Item>
                                 </Typography>
                                 <Typography>

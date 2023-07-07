@@ -27,11 +27,11 @@ const StudentListPage = () => {
     const { refetch, error, data } = useQuery({
         queryKey: ['studentList', currentPage],
         queryFn: () =>
-            Api.request({
+            Api({
                 method: 'GET',
                 url: routePath.teacher.allStudents,
                 headers: {
-                    Authorization: `Bearer ${auth.token}`
+                    Authorization: `Bearer ${auth.token}`        
                 },
                 params: {
                     page: currentPage,
@@ -74,9 +74,9 @@ const StudentListPage = () => {
 
     return (
         <Layout>
-            <div className='bg-blue-200 p-10'>
+            <div className='py-32 bg-blue-200 p-10'>
                 <div className='mx-auto max-w-7xl grid grid-cols-[2fr_1fr] gap-4'>
-                    <div className='shadow-2xl p-6 bg-white rounded-2xl'>
+                    <div className='flex justify-content items-center shadow-2xl p-6 bg-white rounded-2xl'>
                         <div className='justify-between items-center mb-6'>
                             <div className='flex flex-col gap-6'>
                                 {!error && students.length > 0 && students.map(
@@ -88,13 +88,13 @@ const StudentListPage = () => {
                                             >
                                                 <RenderAvatar avatar={value.avatar}/>
                                                 <div className="flex">
-                                                    <div className="w-[85%]">
+                                                    <div className="w-full">
                                                         <div className='flex justify-start text-xl gap-6'>
                                                             <div className='font-semibold text-yellow-700'>{t('content.student')}</div>
                                                             <div className='font-semibold text-black'>{value.name}</div>
                                                         </div>
                                                         <div className='flex justify-between items-center'>
-                                                            <div className='flex items-center justify-start text-xl gap-6'>
+                                                            <div className='flex items-center justify-start text-xl gap-4'>
                                                                 <div>
                                                                     <button className='astext'>
                                                                         <div className='flex my-2 gap-2' onClick={() => {}}>

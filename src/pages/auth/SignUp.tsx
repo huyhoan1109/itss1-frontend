@@ -4,25 +4,30 @@ import { routePath } from "../../routes/routePath"
 import { Typography, notification } from "antd"
 import { Api } from "../../services/api"
 import { useTranslation } from "react-i18next"
-import {Form, Input, Radio, Button, Select, Upload} from "antd"
+import {Form, Input, Radio, Button, Select, Upload, Modal} from "antd"
 import {CaretDownOutlined, UploadOutlined} from "@ant-design/icons"
 import axios from "axios"
+import MapProp from "../../components/Map/MapProp"
+import useAuth from "../../hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 
 const SignUpPage = () => {
     const {t, i18n} = useTranslation()
+    const navigate = useNavigate()
+    const {auth} = useAuth()
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('Ha Noi')
     const [role, setRole] = useState('student')
-    const [lat, setLat] = useState(0)
-    const [lng, setLng] = useState(0)
+    const [lat, setLat] = useState(21.006568)
+    const [lng, setLng] = useState(105.84752)
     const [password, setPassword] = useState('')
     const [c_password, setC_Password] = useState('')
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [c_passwordVisible, setCPasswordVisible] = useState(false);
     const [avatar, setAvatar] = useState<any>(null)
-    useEffect(() => {
+    const newLocation = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {    
                 axios.request({
@@ -41,15 +46,15 @@ const SignUpPage = () => {
                 setLng(position.coords.longitude);
             },
             () => {}, 
-            {maximumAge:0, timeout:40000, enableHighAccuracy:true}
+            {maximumAge:0, timeout:10000, enableHighAccuracy:true}
         );
-    }, [])
+    }
 
     
     const handleSubmit = () => {
         if(email != '' && name != '' && phone != '') {
             if (password.localeCompare(c_password) == 0 && password != ''){
-                Api.request({
+                Api({
                     method: 'POST',
                     url: routePath.auth.signup,
                     data:{
@@ -94,6 +99,20 @@ const SignUpPage = () => {
             })
         }
     }
+    
+    let map_props: MapProp = {
+        c_lat: 0,
+        c_lng: 0,
+        lat: null,
+        lng: null
+    }
+
+    useEffect(() => {
+        if (auth?.user) {
+            if (auth.user.role === 'admin') return navigate(routePath.admin.dashboard, {replace: true})
+            else return navigate(routePath.allTeachers, {replace: true});
+        }
+    }, [])
 
     const handleUpload = async (options: any) => {
         const {file} = options;
@@ -119,7 +138,7 @@ const SignUpPage = () => {
 
     return (
         <Layout>
-            <div className="w-2/5 mx-auto" style={{marginTop: "5%"}}>
+            <div className="w-2/5 mx-auto" style={{ marginTop: "5%"}}>
                 <div style={{ padding: 20, border: '3px solid', borderRadius: 40 }}>
                     <Form>
                         <div style={{width: "75%", marginLeft: "auto", marginRight: "auto"}}>
@@ -303,6 +322,7 @@ const SignUpPage = () => {
                                     type="address" 
                                     value={address} 
                                     placeholder={t('content.address')||""}
+                                    onClick={newLocation}
                                     onChange={(e) => {setAddress(e.target.value)}}
                                 />
                             </Form.Item>

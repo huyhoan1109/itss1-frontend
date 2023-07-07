@@ -1,9 +1,11 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 
 const Api: AxiosInstance = axios.create({
-    baseURL: "http://localhost:5050",
-    timeout: 10000,
-    headers: {},
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    timeout: 60000
 })
 
 Api.interceptors.request.use((config) => {
