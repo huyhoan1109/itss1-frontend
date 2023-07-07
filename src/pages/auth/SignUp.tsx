@@ -34,7 +34,7 @@ const SignUpPage = () => {
                     method: 'GET',
                     url:'https://eu1.locationiq.com/v1/reverse',
                     params: {
-                        key: "pk.91694f91dfa8e396963df2b58cbce170",
+                        key: import.meta.env.LOCATION_APIKEY,
                         lat: position.coords.latitude,
                         lon: position.coords.longitude,
                         format: 'json'

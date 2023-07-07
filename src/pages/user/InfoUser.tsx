@@ -152,7 +152,7 @@ const InfoUserPage = () => {
                     method: 'GET',
                     url:'https://eu1.locationiq.com/v1/reverse',
                     params: {
-                        key: "pk.91694f91dfa8e396963df2b58cbce170",
+                        key: import.meta.env.LOCATION_APIKEY,
                         lat: newLat,
                         lon: newLng,
                         format: 'json'
