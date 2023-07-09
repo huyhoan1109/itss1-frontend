@@ -5,7 +5,7 @@ import { routePath } from "../../routes/routePath"
 import {Button, Form, Input, Checkbox, notification} from "antd"
 
 import { Api } from "../../services/api"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, NavLink } from "react-router-dom"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { useTranslation } from "react-i18next"
 import appLogout from "../../services/appLogout"
@@ -112,19 +112,15 @@ const LoginPage = () => {
                             <Button style={{textAlign: "center", fontSize: 16, borderColor: "blue"}} size="middle" htmlType="submit" block>
                                 {
                                     i18n.language == 'vi' && 
-                                    <a 
-                                        href={routePath.auth.signup} 
-                                    >
+                                    <NavLink to={routePath.auth.signup}>
                                         Tạo tài khoản mới
-                                    </a>
+                                    </NavLink>
                                 }
                                 {
                                     i18n.language == 'jp' &&  
-                                    <a 
-                                        href={routePath.auth.signup} 
-                                    >
+                                    <NavLink to={routePath.auth.signup}>
                                         新しいアカウントを作成
-                                    </a>
+                                    </NavLink>
                                 }
                             </Button>
                         </div>
@@ -132,19 +128,15 @@ const LoginPage = () => {
                         <div className="flex gap-x-2" style={{float: "right", textDecoration: "underline"}}> 
                             {
                                 i18n.language == 'vi' && 
-                                <a 
-                                    href={routePath.auth.forgotPassword} 
-                                >
+                                <NavLink to={routePath.auth.forgotPassword}>
                                     Quên mật khẩu
-                                </a>
+                                </NavLink>
                             }
                             {
                                 i18n.language == 'jp' &&  
-                                <a 
-                                    href={routePath.auth.forgotPassword} 
-                                >
+                                <NavLink to={routePath.auth.forgotPassword} >
                                     パスワード忘れた場合
-                                </a>
+                                </NavLink>
                             }
                         </div>
                     </Form>

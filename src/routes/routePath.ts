@@ -8,7 +8,7 @@ export const routePath = {
     auth: {
         login: '/auth/login',
         signup: '/auth/signup',
-        forgotPassword: '/auth/forgot-password',
+        forgotPassword: '/auth/forgot_password',
     },
     teacher: {
         info: '/teacher/your/info',

@@ -9,7 +9,7 @@ import {CaretDownOutlined, UploadOutlined} from "@ant-design/icons"
 import axios from "axios"
 import MapProp from "../../components/Map/MapProp"
 import useAuth from "../../hooks/useAuth"
-import { useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 
 const SignUpPage = () => {
     const {t, i18n} = useTranslation()
@@ -372,11 +372,11 @@ const SignUpPage = () => {
                         <div style={{ textAlign: 'center' }}> 
                             {
                                 i18n.language == 'vi' &&  
-                                <div style={{fontSize: 18}}>Đã có tài khoản?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
+                                <div style={{fontSize: 18}}>Đã có tài khoản?  <NavLink to={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</NavLink></div>
                             }
                             {
                                 i18n.language == 'jp' &&  
-                                <div style={{fontSize: 18}}>アカウントがある?  <a href={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</a></div>
+                                <div style={{fontSize: 18}}>アカウントがある?  <NavLink to={routePath.auth.login} style={{marginLeft: 20, color: "blue"}}>{t('content.login')}</NavLink></div>
                             }
                         </div>                  
                     </Form>

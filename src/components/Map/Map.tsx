@@ -1,6 +1,8 @@
 import { MapContainer, TileLayer, Circle, Marker, Polyline, useMap  } from 'react-leaflet';
 import MapProp from "./MapProp";
 import { useEffect } from 'react';
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import {Icon} from 'leaflet';
 
 const RecenterAutomatically = (props: MapProp) => {
     const map = useMap();
@@ -23,9 +25,9 @@ export default function Map(props: MapProp) {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={[props.c_lat, props.c_lng]}></Marker>
+            <Marker position={[props.c_lat, props.c_lng]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}></Marker>
             { props.lat && props.lng &&
-            <Marker position={[props.lat, props.lng]}></Marker>
+            <Marker position={[props.lat, props.lng]} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}></Marker>
             }
             <Circle 
                 center={[props.c_lat, props.c_lng]}
