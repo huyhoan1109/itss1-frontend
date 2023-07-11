@@ -57,24 +57,39 @@ const InfoUserPage = () => {
     const handleOpenModal = () => {
         setOpenModal(true)
     }
-    const { refetch, error, data } = useQuery({
-        queryKey: [`userInfo${auth.token}`],
-        queryFn: () => 
-            Api({
-                method: 'GET',
-                url: auth.user.role == 'student' ? routePath.user.base : routePath.teacher.info,
-                headers: {
-                    Authorization: `Bearer ${auth.token}`
-                },
-            })
-    })
 
-    if (error) {
-        setAuth({})
-        setTimeout(() => {
-            navigate(routePath.auth.login)
-        }, 500)
-        return <></>
+    const getData = () => {
+        Api({
+            method: 'GET',
+            url: auth.user.role == 'student' ? routePath.user.base : routePath.teacher.info,
+            headers: {
+                Authorization: `Bearer ${auth.token}`
+            },
+        }).then((res) => {
+            let result = res.data
+            if (auth.user.role == 'teacher') {
+                let teach_methods:CheckboxValueType[] = []
+                let {teach_method1, teach_method2, teach_method3, ...rest} = result.data
+                if (teach_method1 != null){
+                    teach_methods.push(teach_method1)
+                }
+                if (teach_method2 != null){
+                    teach_methods.push(teach_method2)
+                }
+                if (teach_method3 != null){
+                    teach_methods.push(teach_method3)
+                }
+                if (result.schedulers) {
+                    setInfo({...rest, teach_methods})
+                    setSchedulers(result.schedulers)
+                } 
+                setInfo({...rest, teach_methods})
+                setLat(rest.lat)
+                setLng(rest.lng)
+            } else {
+                setInfo(result)
+            }
+        })
     }
 
     const handleUpload = async (options: any) => {
@@ -101,7 +116,7 @@ const InfoUserPage = () => {
                     avatar: res.data.url
                 }
             }).then(() => {
-                refetch()
+                getData()
                 notification.success({
                     message: t('message.updated_ok')
                 })
@@ -114,32 +129,8 @@ const InfoUserPage = () => {
     }
 
     useEffect(() => {
-        if (data?.data?.data) {
-            let result = data.data.data
-            if (auth.user.role == 'teacher') {
-                let teach_methods:CheckboxValueType[] = []
-                let {teach_method1, teach_method2, teach_method3, ...rest} = result
-                if (teach_method1 != null){
-                    teach_methods.push(teach_method1)
-                }
-                if (teach_method2 != null){
-                    teach_methods.push(teach_method2)
-                }
-                if (teach_method3 != null){
-                    teach_methods.push(teach_method3)
-                }
-                if (data?.data?.schedulers) {
-                    setInfo({...rest, teach_methods})
-                    setSchedulers(data.data.schedulers)
-                } 
-                setInfo({...rest, teach_methods})
-                setLat(rest.lat)
-                setLng(rest.lng)
-            } else {
-                setInfo(result)
-            }
-        }
-    }, [data])
+        getData()
+    }, [])
 
     const newLocation = () => {
         if ("geolocation" in navigator) {
@@ -193,7 +184,7 @@ const InfoUserPage = () => {
                 }
             }).then(() => {
                 if (auth.user.role == 'student') {
-                    refetch()
+                    getData()
                     notification.success({
                         message: t('message.updated_ok')
                     })
@@ -270,7 +261,7 @@ const InfoUserPage = () => {
                 })
             })      
         }
-        refetch()
+        getData()
     }
 
     const { TextArea } = Input;

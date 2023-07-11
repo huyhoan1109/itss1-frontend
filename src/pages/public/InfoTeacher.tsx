@@ -86,7 +86,7 @@ const InfoTeacherPage = () => {
             <div className='h-700 w-full bg-blue-200'>
             <Container className='py-32 flex items-end justify-center bg-blue-200'>
                 <div className='w-[85%] h-300 rounded-3xl p-4 shadow-md bg-white flex items-start gap-6'>
-                    <div style={{width: 400, marginLeft: 30, marginTop: 30}}> 
+                    <div style={{width: 200, marginLeft: 20, marginTop: 30}}> 
                         <RenderAvatar avatar={info.avatar} />
                     </div>
                     <div className='flex flex-col gap-2' style={{marginTop: 30}}>
