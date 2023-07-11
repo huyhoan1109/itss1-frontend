@@ -30,5 +30,4 @@ export const routePath = {
         view: (id:string) => path('/comment',`${id}`),
         teacher: (id: string) => path('/comment/teacher', `${id}`)
     },
-    notFound: '*',
 }

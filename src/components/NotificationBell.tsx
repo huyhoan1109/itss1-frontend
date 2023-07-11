@@ -6,6 +6,7 @@ import useAuth from '../hooks/useAuth';
 import { routePath } from '../routes/routePath';
 import { Api } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
     const {auth} = useAuth()
@@ -28,7 +29,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                             <a>{t('content.student')}{item.name}が登録しました</a>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.teacher')}{item.name}が{t(`content.${item.status}`)}しました</a>
+                            <Link to={routePath.teacher.view(item.teacherID)}>{t('content.teacher')}{item.name}が{t(`content.${item.status}`)}しました</Link>
                         ))
                     }
                     {i18n.language == 'vi' && 
@@ -90,7 +91,11 @@ const NotificationBell = ({ iconColor }:any) => {
             <Tooltip title={""}>
                 <IconButton
                     color={iconColor}
-                    onClick={handleOpen}
+                    onClick={(e) => 
+                        {
+                            handleOpen(e)
+                        }
+                    }
                 >
                     <Badge
                         badgeContent={length}

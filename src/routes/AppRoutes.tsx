@@ -78,7 +78,7 @@ const AppRoutes = () => {
                 }
             />
 
-            <Route path={routePath.notFound} element={<NotFoundPage />} />
+            {/* <Route path={routePath.notFound} element={<NotFoundPage />} /> */}
         </Routes>
     )
 

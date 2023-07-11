@@ -11,6 +11,7 @@ import './Comments.css'
 import { useTranslation } from "react-i18next"
 import useComment from "../../hooks/useComment"
 import user_image from '../../assets/images/user.png'
+import RenderAvatar from "../RenderAvatar"
 
 
 const Comments = () => {
@@ -160,7 +161,13 @@ const Comments = () => {
         <div ref={popRef} className="comments-section" id="comments-section">
             <div className="popup">
                 <div className="show-comment">
-                    {
+                    {comments.length == 0 && 
+                    <div className="row-container">
+                        <div className="row-center">
+                            コメントがない
+                        </div>
+                    </div>}
+                    {comments.length > 0 &&
                         comments.map((value:any, idx:any) => {
                             return (                    
                                 <div key={idx} role="button" className="row-container">
@@ -168,7 +175,12 @@ const Comments = () => {
                                         <div className="comment">
                                         <img 
                                             src={value.avatar || user_image} 
-                                            width="50px" 
+                                            style={{
+                                                width:"50px",
+                                                height:"50px",
+                                                borderRadius:"50%",
+                                                overflow:"hidden"
+                                            }}
                                             onError={({ currentTarget }) => {
                                                 currentTarget.onerror = null; // prevents looping
                                                 currentTarget.src = user_image

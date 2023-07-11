@@ -123,7 +123,7 @@ const SearchTeachersPage = () => {
     }
 
     const { isLoading, error, data } = useQuery({
-        queryKey: ['teacherList', name, currentPage, filterValue],
+        queryKey: ['teacherList', name, currentPage, filterValue, times, chooseShift],
         queryFn: () =>
             Api({
                 method: 'GET',
@@ -140,6 +140,8 @@ const SearchTeachersPage = () => {
                     high_price: filterValue.high_price,
                     gender: filterValue.gender,
                     star: filterValue.star_average,
+                    shift: chooseShift,
+                    days: times.dayIDs
                 },
             }),
     })
@@ -157,26 +159,15 @@ const SearchTeachersPage = () => {
             let validTeachers:any = []
             data.data.data.map((value:any) => {
                 let dist = calDistance(map_props.c_lat, map_props.c_lng, value.lat, value.lng)
-                value.schedulers.forEach((schedule:any) => {
-                    let check_sch = true
-                    if (times?.dayIDs?.length > 0) {
-                        let find = times.dayIDs.find((id:any) => id == schedule.weekdayID)
-                        if (find == 0) find = true 
-                        check_sch = find && (schedule.shiftID == chooseShift)
-                    } else {
-                        check_sch = true
+                let check_dist = true
+                if (filterValue?.distance && filterValue.distance != '') check_dist = (filterValue?.distance >= dist)
+                else check_dist = true
+                if(check_dist) {
+                    if (!checkTeacher(validTeachers, value.teacherID)) {
+                        validTeachers.push(value)
+                        count_teacher += 1
                     }
-                    let check_dist = true
-                    if (filterValue?.distance && filterValue.distance != '') check_dist = (filterValue?.distance >= dist)
-                    else check_dist = true
-                    if(check_sch && check_dist) {
-                        if (!checkTeacher(validTeachers, value.teacherID)) {
-                            validTeachers.push(value)
-                            count_teacher += 1
-                        }
-                    }
-                })
-                
+                }
             })
             setTeachers(validTeachers)
             setInfoPage(data.data.infoPage)
