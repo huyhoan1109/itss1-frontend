@@ -20,7 +20,6 @@ import axios from 'axios';
 
 
 const InfoUserPage = () => {
-
     const [chooseShift, setChooseShift] = useState<number>(0)
     const [table, setTable] = useState([false,false,false,false,false,false,false])
     const [weekdays, setWeekDays] = useState<any>(DAYS_JP)

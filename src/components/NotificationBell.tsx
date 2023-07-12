@@ -26,7 +26,7 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                 >
                     {i18n.language == 'jp' && 
                         ((auth.user.role == 'teacher' &&
-                            <a>{t('content.student')}{item.name}が登録しました</a>   
+                            <Link to={routePath.teacher.allStudents}> {t('content.student')}{item.name}が登録しました</Link>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
                             <Link to={routePath.teacher.view(item.teacherID)}>{t('content.teacher')}{item.name}が{t(`content.${item.status}`)}しました</Link>
@@ -34,10 +34,10 @@ const BasicMenu = ({ anchorEl, handleClose, open, menuItems }: any) => {
                     }
                     {i18n.language == 'vi' && 
                         ((auth.user.role == 'teacher' &&
-                            <a>{t('content.student')} {item.name} vừa đăng ký</a>   
+                            <Link to={routePath.teacher.allStudents}>{t('content.student')} {item.name} vừa đăng ký</Link>   
                         )|| 
                         (auth.user.role == 'student' && (item.status.localeCompare("wait") != 0) &&
-                            <a>{t('content.teacher')} {item.name} đã {t(`content.${item.status}`)}</a>
+                            <Link to={routePath.teacher.view(item.teacherID)}>{t('content.teacher')} {item.name} đã {t(`content.${item.status}`)}</Link>
                         ))
                     }
                 </MenuItem>

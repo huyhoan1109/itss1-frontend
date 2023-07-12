@@ -75,7 +75,7 @@ const StudentListPage = () => {
     return (
         <Layout>
             <div className='py-32 bg-blue-200 p-10'>
-                <div className='mx-auto max-w-7xl grid grid-cols-[2fr_1fr] gap-4'>
+                <div className='mx-auto max-w-7xl grid grid-cols-[5fr_3fr]'>
                     <div className='flex justify-content items-center shadow-2xl p-6 bg-white rounded-2xl'>
                         <div className='justify-between items-center mb-6'>
                             <div className='flex flex-col gap-6'>
@@ -84,7 +84,7 @@ const StudentListPage = () => {
                                         return (
                                             <div
                                                 key={index}
-                                                className='w-full border border-solid gap-2 border-gray-700 p-5 rounded-3xl grid grid-cols-[10rem_1fr]'
+                                                className='w-full border border-solid gap-2 border-gray-700 p-5 rounded-3xl grid grid-cols-[15rem_1fr]'
                                             >
                                                 <RenderAvatar avatar={value.avatar}/>
                                                 <div className="flex">
@@ -124,7 +124,7 @@ const StudentListPage = () => {
                                                         style={{
                                                             marginTop: "auto",
                                                             marginBottom: "auto",
-                                                            marginLeft: "10%"
+                                                            marginLeft: "30px"
                                                         }}
                                                     > 
                                                         <DotBadge status={value.status} /> 
